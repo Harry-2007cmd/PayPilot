@@ -1,0 +1,94 @@
+# Context File: PayPal AI Hackathon Official Rules
+
+## 1. Overview & Key Dates
+- **Name:** PayPal AI Hackathon
+- **Sponsor:** PayPal Inc. (San Jose, CA)
+- **Administrator:** Devpost, Inc. (New York, NY)
+- **Website:** [paypalaihackathon.devpost.com](https://paypalaihackathon.devpost.com)
+- **Submission Period:** October 1, 2026 (9:15 am PT) – November 12, 2026 (12:00 pm PT)
+- **Judging Period:** December 1, 2026 (2:00 pm PT) – December 15, 2026 (8:00 am PT)
+- **Winners Announced:** On or around December 21, 2026 (2:00 pm PT)
+
+---
+
+## 2. Eligibility
+### **Who CAN Enter:**
+- Individuals at least the age of majority in their residence jurisdiction.
+- Teams of eligible individuals.
+- Organizations (corporations, nonprofits, LLCs, partnerships, etc.) existing/incorporated at entry.
+- *Note:* Individuals can join multiple teams/organizations and also enter individually. Teams/Organizations must appoint an authorized "Representative."
+
+### **Who CANNOT Enter:**
+- Residents/Organizations domiciled in restricted regions: Brazil, Quebec, Russia, Crimea, Cuba, Iran, North Korea, and U.S. OFAC comprehensively sanctioned countries.
+- Promotion Entities (Sponsor/Administrator) and their employees, agents, immediate family members (spouse, children, parents, siblings), or household members.
+- Judges or companies/individuals employing a Judge.
+- Affiliates or parent companies of promotion entities.
+- Anyone whose participation creates a real or apparent conflict of interest.
+
+---
+
+## 3. Project Requirements
+- **Core Concept:** Build or update an application integrating the **PayPal developer platform** (using the free sandbox environment via `https://developer.paypal.com/`) and an **AI tool, model, or platform** of choice.
+- **PayPal Services Included:** Venmo, Braintree, Xoom, Honey, Zettle, Paidy, Hyperwallet, Simility, Swift Financial, etc.
+- **Optional AI Sponsor Tools Provided:** AG Grid, APIMatic, Astropods, Bryntum, Channel3, Elastic, KERNEL, Postman, Render, Zapier (using these is optional; any AI tool works as long as PayPal integration is central).
+- **Project State:** Must be newly created OR significantly updated after the Hackathon start date.
+- **Functionality & Platform:** Must run successfully on its intended platform, function as depicted in videos/descriptions, and use authorized third-party APIs/SDKs/licenses.
+
+---
+
+## 4. Submission Requirements
+Submissions must be made on Devpost and include:
+1. **Text Description:** Detailed explanation of features and functionality.
+2. **Working Demo:** Accessible functional demo (either via clear setup/run instructions in a code repository or a hosted demo URL. Static prototypes/mocks are disqualified).
+3. **Public Code Repository:** Public GitHub, Bitbucket, or GitLab repository containing source code, assets, instructions, and an open-source license file visible in the "About" section. Include test account credentials or sandbox login details if private/restricted.
+4. **Demonstration Video:** 
+   - Under 3 minutes.
+   - Showing the project functioning on its built device.
+   - Publicly uploaded to YouTube with the link provided in the form.
+   - No unauthorized third-party trademarks/copyrighted music.
+5. **Language:** Must be in English or accompanied by an English translation.
+
+---
+
+## 5. Judging Criteria & Process
+Evaluated in two stages:
+- **Stage One (Pass/Fail):** Baseline viability check for theme fit and API/SDK usage.
+- **Stage Two (Equally Weighted Criteria):**
+  - **Technological Implementation:** Thoroughness and skill using PayPal Developer Platform and AI tools; genuine non-trivial effort.
+  - **Design:** Complete, coherent product experience beyond a mere technical proof of concept.
+  - **Potential Impact:** Credible, specific case for solving a real problem for a real audience.
+  - **Innovation/Idea:** Creativity, novelty, and differentiation from existing concepts.
+  - **Presentation:** End-to-end working video demonstration, clear pitch of problem/solution/target audience.
+
+---
+
+## 6. Prizes Overview
+### **Grand Prizes:**
+- **1st Place:** $12,000 USD (1 winner)
+- **2nd Place:** $8,000 USD (1 winner)
+- **3rd Place:** $5,000 USD (1 winner)
+
+### **Honorable Mention Prizes ($5,000 USD each, 1 winner each):**
+- Most Creative
+- Most Impactful
+- Best Demo Delivery
+- Best Use of PayPal + AI
+- Best Use of Agentic Commerce
+
+### **Sponsor Prizes:**
+- **AG Grid:** 1st ($5,000 USD), 2nd ($2,000 USD), 3rd ($1,000 USD x 3)
+- **APIMatic:** $1,000 USD + 6 months APIMatic business subscription (3 winners)
+- **Bryntum:** $1,000 USD (3 winners)
+- **Channel3:** $1,500 USD (1 winner)
+- **Render:** 1st ($1,000 credits), 2nd ($750 credits), 3rd ($500 credits)
+
+### **Multiple Prize Limits:**
+- A project can win **at most**:
+  - One (1) Grand Prize + One (1) Sponsor Prize, **OR**
+  - One (1) Honorable Mention Prize + One (1) Sponsor Prize.
+
+---
+
+## 7. Compliance, Verification & Taxes
+- **Verification:** Winners are subject to identity and role verification via post-competition prize affidavits (Required Forms must be returned within 10 business days).
+- **Fees & Taxes:** Winners are solely responsible for wiring/currency fees, reporting, and paying all applicable local, state, provincial, federal, or international taxes. Non-US residents may need to provide form W-8BEN; US residents may need form W-9. Sponsor/Devpost may withhold taxes as required by law.
