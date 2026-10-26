@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { investigationsApi } from '../services/api';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
-import { StatusBadge } from '../components/StatusBadge';
-import { Bot, Send, Loader2, AlertTriangle, CheckCircle2, Copy, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { Bot, Loader2, AlertTriangle, CheckCircle2, Copy, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 import { clsx } from 'clsx';
 
 interface AIInvestigateResponse {

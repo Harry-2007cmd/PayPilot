@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { actionsApi } from '../services/api';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
-import { StatusBadge } from '../components/StatusBadge';
-import { History, Filter, Search, ChevronDown, ChevronUp, Clock, User, Database, Shield, CheckCircle2, XCircle, CreditCard, Upload } from 'lucide-react';
+import { Card, CardContent } from './ui/Card';
+import { History, Filter, Clock, User, Database, Shield, CheckCircle2, XCircle, CreditCard, Upload } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { clsx } from 'clsx';
 
@@ -23,7 +22,7 @@ export function Audit() {
   const [events, setEvents] = useState<AuditEvent[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(50);
+  const pageSize = 50;
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState({ action: '', target_type: '' });
   const [showFilters, setShowFilters] = useState(false);

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ordersApi, paymentsApi, investigationsApi } from '../services/api';
+import { ordersApi, paymentsApi } from '../services/api';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
 import { StatusBadge } from '../components/StatusBadge';
-import { ArrowLeft, CreditCard, DollarSign, Clock, AlertTriangle, Copy, ExternalLink } from 'lucide-react';
+import { ArrowLeft, CreditCard, DollarSign, Clock, AlertTriangle, Copy } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { clsx } from 'clsx';
 import { PROVENANCE_LABELS } from '../types';

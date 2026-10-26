@@ -1,38 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { actionsApi, paymentsApi } from '../services/api';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { actionsApi } from '../services/api';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
 import { StatusBadge } from '../components/StatusBadge';
-import { ShieldCheck, AlertTriangle, CheckCircle2, XCircle, Clock, DollarSign, Copy, ExternalLink, Loader2 } from 'lucide-react';
+import { ShieldCheck, CheckCircle2, XCircle, DollarSign, Copy, ExternalLink, Loader2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { clsx } from 'clsx';
-
-interface ProposedAction {
-  id: string;
-  merchant_id: string;
-  investigation_id: string;
-  action_type: string;
-  target_capture_id: string;
-  currency: string;
-  amount: string;
-  reason: string;
-  status: string;
-  proposed_by: string;
-  approved_by: string | null;
-  approved_at: string | null;
-  executed_at: string | null;
-  provider_request_id: string | null;
-  idempotency_key: string;
-  outcome_json: Record<string, unknown>;
-}
+import type { ProposedAction } from '../types';
 
 export function Approvals() {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const [actions, setActions] = useState<ProposedAction[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const pageSize = 20;
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState({ status: '' });
   const [selectedAction, setSelectedAction] = useState<ProposedAction | null>(null);
@@ -222,7 +203,7 @@ export function Approvals() {
                         <StatusBadge status={action.status} />
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                        {formatDistanceToNow(new Date(action.proposed_at || action.created_at || Date.now()), { addSuffix: true })}
+                        {formatDistanceToNow(new Date(action.approved_at || action.id), { addSuffix: true })}
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">

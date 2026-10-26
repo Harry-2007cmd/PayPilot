@@ -7,6 +7,11 @@ export interface User {
   disabled_at: string | null;
 }
 
+export interface MeResponse {
+  user: User;
+  merchant: Merchant;
+}
+
 export interface Merchant {
   id: string;
   name: string;
@@ -113,6 +118,7 @@ export interface ProposedAction {
   provider_request_id: string | null;
   idempotency_key: string;
   outcome_json: Record<string, unknown>;
+  created_at: string;
 }
 
 export interface AuditEvent {

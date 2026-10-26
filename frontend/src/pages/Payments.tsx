@@ -1,38 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { paymentsApi } from '../services/api';
 import { Card, CardContent } from './ui/Card';
 import { StatusBadge } from '../components/StatusBadge';
-import { CreditCard, Filter, Search } from 'lucide-react';
+import { CreditCard } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 export function Payments() {
   const navigate = useNavigate();
   const [payments, setPayments] = useState<any[]>([]);
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
-  const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState({ status: '' });
 
   useEffect(() => {
     fetchPayments();
-  }, [page, filters]);
+  }, [filters]);
 
   const fetchPayments = async () => {
-    setIsLoading(true);
     try {
       const response = await paymentsApi.list({
-        page,
-        page_size: pageSize,
+        page: 1,
+        page_size: 50,
         status: filters.status || undefined,
       });
       setPayments(response.data.items);
-      setTotal(response.data.total);
     } catch (error) {
       console.error('Failed to fetch payments:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 

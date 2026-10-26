@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { ordersApi, paymentsApi, investigationsApi, webhooksApi } from '../services/api';
-import { investigationsApi as invApi } from '../services/api';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
+import { paymentsApi, investigationsApi, webhooksApi } from '../services/api';
+import { Card, CardHeader, CardTitle, CardContent } from './ui/Card';
 import { StatusBadge } from '../components/StatusBadge';
 import {
   CreditCard,
   AlertTriangle,
   CheckCircle2,
-  Clock,
   RefreshCw,
   TrendingUp,
   DollarSign,
@@ -27,7 +25,7 @@ interface DashboardMetrics {
 }
 
 export function Overview() {
-  const { merchant } = useAuth();
+  const { merchant: _merchant } = useAuth();
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [recentPayments, setRecentPayments] = useState<any[]>([]);
   const [recentInvestigations, setRecentInvestigations] = useState<any[]>([]);
@@ -42,7 +40,7 @@ export function Overview() {
     try {
       const [paymentsRes, investigationsRes, webhookRes] = await Promise.all([
         paymentsApi.list({ page_size: 5 }),
-        invApi.list({ page_size: 5, status: 'open' }),
+        investigationsApi.list({ page_size: 5, status: 'open' }),
         webhooksApi.status(),
       ]);
 
@@ -51,15 +49,15 @@ export function Overview() {
 
       // Calculate metrics
       const totalPayments = paymentsRes.data.total;
-      const capturedPayments = payments.filter(p => p.status === 'captured').length;
-      const failedPayments = payments.filter(p => ['failed', 'cancelled'].includes(p.status)).length;
+      const capturedPayments = payments.filter((p: any) => p.status === 'captured').length;
+      const failedPayments = payments.filter((p: any) => ['failed', 'cancelled'].includes(p.status)).length;
       const openInvestigations = investigationsRes.data.total;
-      const mismatchCount = investigations.filter(i =>
+      const mismatchCount = investigations.filter((i: any) =>
         ['amount_mismatch', 'currency_mismatch', 'status_mismatch'].includes(i.issue_type)
       ).length;
       const totalAmount = payments
-        .filter(p => p.status === 'captured')
-        .reduce((sum, p) => sum + parseFloat(p.amount), 0);
+        .filter((p: any) => p.status === 'captured')
+        .reduce((sum: number, p: any) => sum + parseFloat(p.amount), 0);
 
       setMetrics({
         total_payments: totalPayments,
@@ -187,7 +185,7 @@ export function Overview() {
               </div>
             ) : (
               <div className="space-y-3">
-                {recentPayments.map((payment) => (
+                {recentPayments.map((payment: any) => (
                   <div
                     key={payment.id}
                     className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"

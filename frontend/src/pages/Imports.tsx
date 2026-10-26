@@ -1,15 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { importsApi, webhooksApi } from '../services/api';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from './ui/Card';
 import { StatusBadge } from '../components/StatusBadge';
-import { Upload, FileText, CheckCircle2, AlertCircle, Clock, RefreshCw, Plus, ExternalLink, ShieldCheck } from 'lucide-react';
+import { Upload, FileText, AlertCircle, ShieldCheck } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import { clsx } from 'clsx';
 
 export function Imports() {
   const [imports, setImports] = useState<any[]>([]);
   const [webhookStatus, setWebhookStatus] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [uploading, setUploadLoading] = useState(false);
   const [preview, setPreview] = useState<any>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -19,7 +17,6 @@ export function Imports() {
   }, []);
 
   const fetchData = async () => {
-    setIsLoading(true);
     try {
       const [importsRes, webhookRes] = await Promise.all([
         importsApi.list(),
@@ -29,8 +26,6 @@ export function Imports() {
       setWebhookStatus(webhookRes.data);
     } catch (error) {
       console.error('Failed to fetch imports data:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 

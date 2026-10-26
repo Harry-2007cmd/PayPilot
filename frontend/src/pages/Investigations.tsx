@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { investigationsApi } from '../services/api';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
+import { Card, CardContent } from './ui/Card';
 import { StatusBadge } from '../components/StatusBadge';
-import { Search, Filter, ChevronDown, Plus, AlertTriangle } from 'lucide-react';
+import { Search, Filter, Plus, AlertTriangle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { clsx } from 'clsx';
 
@@ -27,7 +27,7 @@ export function Investigations() {
   const [investigations, setInvestigations] = useState<Investigation[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const pageSize = 20;
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState({
     status: '',
