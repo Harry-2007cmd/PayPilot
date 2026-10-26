@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -9,14 +9,11 @@ import {
   ShieldCheck,
   History,
   Upload,
-  Settings,
   LogOut,
   Menu,
   X,
   Sun,
   Moon,
-  ChevronLeft,
-  ChevronRight,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
