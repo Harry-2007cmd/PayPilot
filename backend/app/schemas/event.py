@@ -1,0 +1,35 @@
+from pydantic import BaseModel, Field
+from typing import Optional
+from datetime import datetime
+import uuid
+
+
+class ProviderEventOut(BaseModel):
+    id: uuid.UUID
+    merchant_id: uuid.UUID
+    provider: str
+    provider_event_id: str
+    event_type: str
+    event_time: datetime
+    received_at: datetime
+    verification_status: str
+    processing_status: str
+    payload_minimized_json: dict
+
+    class Config:
+        from_attributes = True
+
+
+class ProviderEventListResponse(BaseModel):
+    items: list[ProviderEventOut]
+    total: int
+    page: int
+    page_size: int
+
+
+class WebhookStatusResponse(BaseModel):
+    total_events: int
+    verified: int
+    pending: int
+    failed: int
+    duplicate: int
