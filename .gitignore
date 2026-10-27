@@ -1,0 +1,22 @@
+# Pycache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+ .git/
+venv/
+env/
+/venv
+/env
+
+# Database
+paypilot.db
+
+# Secrets and env files
+.env
+.env.example
+
+# Uploads
+uploads/
+
