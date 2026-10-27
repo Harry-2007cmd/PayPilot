@@ -138,7 +138,7 @@ export const webhooksApi = {
 
 // Investigations API
 export const investigationsApi = {
-  list: (params?: { page?: number; page_size?: number; status?: string; issue_type?: string; priority?: string }) =>
+  list: (params?: { page?: number; page_size?: number; status?: string; issue_type?: string; priority?: string; search?: string }) =>
     api.get('/investigations', { params }),
   get: (id: string) => api.get(`/investigations/${id}`),
   create: (data: {

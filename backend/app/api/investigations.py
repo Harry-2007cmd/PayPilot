@@ -55,6 +55,7 @@ async def list_investigations(
     status_filter: str | None = Query(None, alias="status"),
     issue_type: str | None = Query(None, alias="issue_type"),
     priority: str | None = Query(None),
+    search: str | None = Query(None),
     current_user = Depends(get_current_user),
     current_merchant = Depends(get_current_merchant),
     db: AsyncSession = Depends(get_db)
@@ -66,6 +67,8 @@ async def list_investigations(
         query = query.where(Investigation.issue_type == issue_type)
     if priority:
         query = query.where(Investigation.priority == priority)
+    if search:
+        query = query.where(Investigation.title.ilike(f"%{search}%"))
     total_result = await db.execute(select(func.count()).select_from(query.subquery()))
     total = total_result.scalar()
     query = query.order_by(Investigation.opened_at.desc()).offset((page - 1) * page_size).limit(page_size)

@@ -78,3 +78,4 @@ class AIInvestigateResponse(BaseModel):
     proposed_action_id: Optional[uuid.UUID] = None
     confidence: Optional[str] = None
     needs_human_review: bool = True
+    findings: list[dict] = []

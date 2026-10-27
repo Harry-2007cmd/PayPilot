@@ -69,20 +69,21 @@ export function Approvals() {
     const captureId = searchParams.get('capture_id');
     const amount = searchParams.get('amount');
     const currency = searchParams.get('currency');
+    const investigationId = searchParams.get('investigation_id');
 
-    if (captureId && amount && currency) {
+    if (captureId && amount && currency && investigationId) {
       // Check if already exists
       const existing = actions.find(a => a.target_capture_id === captureId && a.status === 'pending');
       if (!existing) {
         try {
           await actionsApi.create({
-            investigation_id: '00000000-0000-0000-0000-000000000000', // placeholder
+            investigation_id: investigationId,
             action_type: 'refund',
             target_capture_id: captureId,
             currency,
             amount: parseFloat(amount),
             reason: 'Refund requested from payment detail',
-            idempotency_key: `refund-${captureId}-${Date.now()}`,
+            idempotency_key: `refund-${captureId}-${investigationId}`,
           });
           fetchActions();
         } catch (error) {
@@ -203,7 +204,9 @@ export function Approvals() {
                         <StatusBadge status={action.status} />
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                        {formatDistanceToNow(new Date(action.approved_at || action.id), { addSuffix: true })}
+                        {action.approved_at
+                          ? formatDistanceToNow(new Date(action.approved_at), { addSuffix: true })
+                          : '—'}
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">

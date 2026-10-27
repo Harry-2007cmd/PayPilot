@@ -191,7 +191,7 @@ async def test_actions_endpoints():
         # Create proposed action
         response = await ac.post(
             f"/api/investigations/{inv_id}/proposed-actions",
-            json={"action_type": "refund", "target_capture_id": "test_capture_1", "currency": "USD", "amount": 100.00, "reason": "Test refund", "idempotency_key": "test_key_1"},
+            json={"action_type": "refund", "target_capture_id": "test_capture_1", "currency": "USD", "amount": 100.00, "reason": "Test refund", "idempotency_key": f"test_key_{inv_id}"},
             headers=headers
         )
         assert response.status_code == 201
@@ -202,22 +202,33 @@ async def test_actions_endpoints():
         assert response.status_code == 200
         print("✓ proposed-actions list works")
 
-        # Approve proposed action
-        action_id = response.json()["id"]
+        # Approve proposed action (decline -> exercises state machine without PayPal creds)
+        action_id = response.json()["items"][0]["id"]
         response = await ac.post(
             f"/api/proposed-actions/{action_id}/approve",
-            json={"approved": True},
+            json={"approved": False},
             headers=headers
         )
         assert response.status_code == 200
-        print("✓ proposed-actions/{id}/approve works")
+        assert response.json()["status"] == "rejected"
+        print("✓ proposed-actions/{id}/approve (decline) works")
+
+        # Create a second action to test the dedicated reject endpoint
+        response = await ac.post(
+            f"/api/investigations/{inv_id}/proposed-actions",
+            json={"action_type": "refund", "target_capture_id": "test_capture_1", "currency": "USD", "amount": 100.00, "reason": "Test refund", "idempotency_key": f"test_key_{inv_id}_reject"},
+            headers=headers
+        )
+        assert response.status_code == 201
+        reject_action_id = response.json()["id"]
 
         # Reject proposed action
         response = await ac.post(
-            f"/api/proposed-actions/{action_id}/reject",
+            f"/api/proposed-actions/{reject_action_id}/reject",
             headers=headers
         )
         assert response.status_code == 200
+        assert response.json()["status"] == "rejected"
         print("✓ proposed-actions/{id}/reject works")
 
         # List audit events

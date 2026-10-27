@@ -5,6 +5,8 @@ import { Layout } from './components/Layout';
 import { Login } from './pages/Login';
 import { Overview } from './pages/Overview';
 import { Investigations } from './pages/Investigations';
+import { InvestigationDetail } from './pages/InvestigationDetail';
+import { InvestigationCreate } from './pages/InvestigationCreate';
 import { AICopilot } from './pages/AICopilot';
 import { Approvals } from './pages/Approvals';
 import { Audit } from './pages/Audit';
@@ -43,15 +45,15 @@ function App() {
         <Route path="payments" element={<Payments />} />
         <Route path="payments/:id" element={<PaymentDetail />} />
         <Route path="investigations" element={<Investigations />} />
-        <Route path="investigations/new" element={<div>Create Investigation (Coming Soon)</div>} />
-        <Route path="investigations/:id" element={<div>Investigation Detail (Coming Soon)</div>} />
+        <Route path="investigations/new" element={<InvestigationCreate />} />
+        <Route path="investigations/:id" element={<InvestigationDetail />} />
         <Route path="ai-copilot" element={<AICopilot />} />
         <Route path="approvals" element={<Approvals />} />
-        <Route path="approvals/new" element={<div>Create Approval (Coming Soon)</div>} />
-        <Route path="approvals/:id" element={<div>Approval Detail (Coming Soon)</div>} />
+        <Route path="approvals/new" element={<div className="p-6 text-center text-gray-500">Create Approval — navigate from Investigation Detail</div>} />
+        <Route path="approvals/:id" element={<div className="p-6 text-center text-gray-500">Approval Detail — not yet implemented</div>} />
         <Route path="audit" element={<Audit />} />
         <Route path="imports" element={<Imports />} />
-        <Route path="settings" element={<div>Settings (Coming Soon)</div>} />
+        <Route path="settings" element={<div className="p-6 text-center text-gray-500">Settings (Coming Soon)</div>} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

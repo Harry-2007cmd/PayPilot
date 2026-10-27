@@ -13,7 +13,7 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Set up target metadata
-from app.core.database import Base, async_engine
+from app.core.database import Base, engine
 from app.core.config import settings
 from app.models import *  # noqa: F401,F403 - import all models for metadata
 
@@ -40,11 +40,11 @@ def do_run_migrations(connection: Connection) -> None:
         render_as_async=True,
     )
     with context.begin_transaction():
-        context.run_migrations(connection)
+        context.run_migrations()
 
 
 async def run_migrations_online() -> None:
-    connectable: AsyncEngine = async_engine
+    connectable = engine
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)
     await connectable.dispose()

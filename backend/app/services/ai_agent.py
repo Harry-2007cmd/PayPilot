@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select, func, delete
 from sqlalchemy.orm import selectinload
 
 from app.models.investigation import Investigation, InvestigationFinding
@@ -329,6 +329,10 @@ class AIAgent:
             elif "duplicate_event" in types:
                 issue_type = "duplicate_event"
 
+        # Persist findings if we have an investigation record
+        if investigation_id:
+            await self._persist_findings(investigation_id, rule_findings)
+
         return {
             "summary": summary,
             "issue_type": issue_type,
@@ -338,7 +342,37 @@ class AIAgent:
             "proposed_action_id": proposed_action_id,
             "confidence": confidence,
             "needs_human_review": needs_human_review,
+            "findings": [
+                {
+                    "type": f["type"],
+                    "severity": f["severity"],
+                    "summary": f["summary"],
+                    "recommendation": f.get("recommendation", ""),
+                }
+                for f in rule_findings
+            ],
         }
+
+    async def _persist_findings(self, investigation_id: uuid.UUID, rule_findings: list[dict]) -> None:
+        """Replace stale findings for an investigation with the current run's findings."""
+        await self.db.execute(
+            delete(InvestigationFinding).where(
+                InvestigationFinding.investigation_id == investigation_id
+            )
+        )
+        for f in rule_findings:
+            self.db.add(InvestigationFinding(
+                id=uuid.uuid4(),
+                investigation_id=investigation_id,
+                finding_type=f["type"],
+                severity=f["severity"],
+                summary=f["summary"],
+                evidence_refs_json=f.get("evidence_refs", {}),
+                facts_json=f.get("facts", {}),
+                uncertainties_json=f.get("uncertainties", {}),
+                recommendation=f.get("recommendation", ""),
+            ))
+        await self.db.commit()
 
     def _generate_recommendation(self, rule_findings: list, order_id: Optional[uuid.UUID], payment_attempt_id: Optional[uuid.UUID]) -> dict:
         if not rule_findings:
