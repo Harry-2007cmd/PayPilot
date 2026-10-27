@@ -34,8 +34,10 @@ async def create_paypal_order(
 
     adapter = PayPalAdapter()
     try:
+        # Format amount to 2 decimal places for PayPal (USD requires 2)
+        amount_for_paypal = f"{Decimal(str(order.total_amount)):.2f}"
         paypal_order = await adapter.create_order(
-            amount=str(order.total_amount),
+            amount=amount_for_paypal,
             currency=order.currency,
             reference_id=str(order.id),
         )

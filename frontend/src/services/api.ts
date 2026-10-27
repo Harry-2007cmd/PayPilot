@@ -159,6 +159,7 @@ export const investigationsApi = {
 export const actionsApi = {
   listProposed: (params?: { page?: number; page_size?: number; status?: string }) =>
     api.get('/proposed-actions', { params }),
+  get: (id: string) => api.get(`/proposed-actions/${id}`),
   create: (data: {
     investigation_id: string;
     action_type: string;

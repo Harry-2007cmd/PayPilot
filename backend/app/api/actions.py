@@ -93,6 +93,25 @@ async def create_proposed_action(
     return proposed_action
 
 
+@router.get("/proposed-actions/{action_id}", response_model=ProposedActionOut)
+async def get_proposed_action(
+    action_id: uuid.UUID,
+    current_user = Depends(get_current_user),
+    current_merchant = Depends(get_current_merchant),
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(
+        select(ProposedAction).where(
+            ProposedAction.id == action_id,
+            ProposedAction.merchant_id == current_merchant.id,
+        )
+    )
+    action = result.scalar_one_or_none()
+    if not action:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proposed action not found")
+    return action
+
+
 @router.post("/proposed-actions/{action_id}/approve", response_model=ProposedActionOut)
 async def approve_proposed_action(
     action_id: uuid.UUID,

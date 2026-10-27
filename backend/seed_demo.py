@@ -40,6 +40,9 @@ async def seed_data():
             db.add(user)
             await db.flush()
             print(f"Created user: {user.email}")
+        elif user.merchant_id != merchant.id:
+            user.merchant_id = merchant.id
+            print(f"Updated user merchant to: {merchant.name}")
 
         # Check order
         result = await db.execute(select(Order).where(Order.external_order_id == "ORD-DEMO-1001"))
