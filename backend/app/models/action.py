@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Optional
-from sqlalchemy import String, DateTime, ForeignKey, Numeric, Text, Index, Enum as SQLEnum
+from sqlalchemy import String, DateTime, ForeignKey, Numeric, Text, Index
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
@@ -37,6 +37,15 @@ class ProposedAction(Base):
     provider_request_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     idempotency_key: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     outcome_json: Mapped[dict] = mapped_column(JSONB, default=dict, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
 
     merchant: Mapped["Merchant"] = relationship(back_populates="proposed_actions")
     investigation: Mapped["Investigation"] = relationship(back_populates="proposed_actions")

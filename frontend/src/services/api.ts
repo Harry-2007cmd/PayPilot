@@ -167,7 +167,7 @@ export const actionsApi = {
     amount: string | number;
     reason: string;
     idempotency_key: string;
-  }) => api.post('/investigations/{investigation_id}/proposed-actions', data),
+  }) => api.post(`/investigations/${data.investigation_id}/proposed-actions`, data),
   approve: (id: string, approved: boolean = true) =>
     api.post(`/proposed-actions/${id}/approve`, { approved }),
   reject: (id: string) => api.post(`/proposed-actions/${id}/reject`),

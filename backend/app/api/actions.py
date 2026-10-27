@@ -30,10 +30,12 @@ async def create_proposed_action(
     current_merchant = Depends(get_current_merchant),
     db: AsyncSession = Depends(get_db)
 ):
+    # Use path parameter if not provided in body
+    inv_id = action_data.investigation_id or investigation_id
     # Verify investigation belongs to merchant
     result = await db.execute(
         select(Investigation).where(
-            Investigation.id == investigation_id,
+            Investigation.id == inv_id,
             Investigation.merchant_id == current_merchant.id
         )
     )
@@ -62,7 +64,7 @@ async def create_proposed_action(
 
     proposed_action = ProposedAction(
         merchant_id=current_merchant.id,
-        investigation_id=investigation_id,
+        investigation_id=inv_id,
         action_type=action_data.action_type,
         target_capture_id=action_data.target_capture_id,
         currency=action_data.currency.upper(),
@@ -231,6 +233,7 @@ async def list_proposed_actions(
         query = query.where(ProposedAction.status == status_filter)
     total_result = await db.execute(select(func.count()).select_from(query.subquery()))
     total = total_result.scalar()
+    # Sort by created_at.desc()
     query = query.order_by(ProposedAction.created_at.desc()).offset((page - 1) * page_size).limit(page_size)
     result = await db.execute(query)
     actions = result.scalars().all()

@@ -35,7 +35,7 @@ async def seed_data():
                 merchant_id=merchant.id,
                 email="demo@paypilot.ai",
                 password_hash=get_password_hash("demo123"),
-                role="admin"
+                role="member"
             )
             db.add(user)
             await db.flush()
@@ -49,7 +49,7 @@ async def seed_data():
             order = Order(
                 id=uuid.uuid4(),
                 merchant_id=merchant.id,
-                source_type="shopify",
+                source_type="local",
                 external_order_id="ORD-DEMO-1001",
                 currency="USD",
                 total_amount="100.00",

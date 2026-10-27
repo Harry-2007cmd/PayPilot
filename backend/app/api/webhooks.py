@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request, Header
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func, case
 from datetime import datetime, timezone
 from decimal import Decimal
 import uuid
@@ -187,14 +187,13 @@ async def webhook_status(
     db: AsyncSession = Depends(get_db)
 ):
     """Get webhook processing status (admin/diagnostic)."""
-    from sqlalchemy import func
     result = await db.execute(
         select(
             func.count(ProviderEvent.id),
-            func.sum((ProviderEvent.verification_status == "verified").cast(int)),
-            func.sum((ProviderEvent.verification_status == "pending").cast(int)),
-            func.sum((ProviderEvent.verification_status == "failed").cast(int)),
-            func.sum((ProviderEvent.processing_status == "duplicate").cast(int)),
+            func.sum(case((ProviderEvent.verification_status == "verified", 1), else_=0)),
+            func.sum(case((ProviderEvent.verification_status == "pending", 1), else_=0)),
+            func.sum(case((ProviderEvent.verification_status == "failed", 1), else_=0)),
+            func.sum(case((ProviderEvent.processing_status == "duplicate", 1), else_=0)),
         ).where(ProviderEvent.merchant_id == current_merchant.id)
     )
     total, verified, pending, failed, duplicate = result.one()

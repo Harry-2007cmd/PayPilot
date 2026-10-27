@@ -6,7 +6,7 @@ import uuid
 
 
 class ProposedActionCreate(BaseModel):
-    investigation_id: uuid.UUID
+    investigation_id: Optional[uuid.UUID] = None
     action_type: str = Field(..., pattern="^(refund)$")
     target_capture_id: str
     currency: str = Field(..., min_length=3, max_length=3)

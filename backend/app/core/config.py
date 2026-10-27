@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "PayPilot AI"
     APP_VERSION: str = "0.1.0"
     DEBUG: bool = True
-    APP_SECRET_KEY: str = Field(..., description="Secret key for JWT tokens")
+    APP_SECRET_KEY: str = Field(default="dev-change-me-in-production", description="Secret key for JWT tokens")
 
     # Database
     DATABASE_URL: str = Field(

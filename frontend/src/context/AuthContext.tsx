@@ -25,7 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data: MeResponse = response.data;
       setUser(data.user);
       setMerchant(data.merchant);
-      localStorage.setItem('access_token', data.user.id); // placeholder, actual token in interceptor
+      // Keep the existing access_token; the request interceptor attaches it.
     } catch {
       setUser(null);
       setMerchant(null);
