@@ -25,6 +25,7 @@ class ImportRecord(Base):
     row_count: Mapped[int] = mapped_column(default=0, nullable=False)
     valid_count: Mapped[int] = mapped_column(default=0, nullable=False)
     error_count: Mapped[int] = mapped_column(default=0, nullable=False)
+    raw_data_json: Mapped[list[dict]] = mapped_column(JSONB, default=list, nullable=False)
     status: Mapped[str] = mapped_column(String(50), default="pending", nullable=False)
     uploaded_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False

@@ -41,7 +41,11 @@ async def create_investigation(
     db.add(investigation)
     await db.commit()
     await db.refresh(investigation)
-    return investigation
+    # Eager-load findings so Pydantic doesn't lazy-load the relationship in async
+    result = await db.execute(
+        select(Investigation).options(selectinload(Investigation.findings)).where(Investigation.id == investigation.id)
+    )
+    return result.scalar_one()
 
 
 @router.get("", response_model=InvestigationListResponse)
@@ -112,7 +116,10 @@ async def update_investigation(
         investigation.title = update_data.title
     await db.commit()
     await db.refresh(investigation)
-    return investigation
+    result = await db.execute(
+        select(Investigation).options(selectinload(Investigation.findings)).where(Investigation.id == investigation.id)
+    )
+    return result.scalar_one()
 
 
 @router.post("/{investigation_id}/run", response_model=AIInvestigateResponse)

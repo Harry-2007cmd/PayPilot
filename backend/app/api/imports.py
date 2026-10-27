@@ -123,6 +123,7 @@ async def preview_import(
 
     import_record.valid_count = len(valid_rows)
     import_record.error_count = len(errors)
+    import_record.raw_data_json = [r.model_dump(mode="json") for r in valid_rows]
     await db.commit()
 
     return ImportPreviewResponse(
@@ -159,16 +160,35 @@ async def confirm_import(
     if not import_record:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Import preview not found or already processed")
 
-    # Re-parse and insert valid rows
-    # In a real implementation, we'd store the parsed data in the preview step
-    # For now, we'll just mark as completed
+    # Mark completed and insert validated rows
     import_record.status = "completed"
     import_record.completed_at = datetime.now(timezone.utc)
+
+    for row_data in (import_record.raw_data_json or []):
+        event_time = None
+        if row_data.get("event_time"):
+            try:
+                event_time = datetime.fromisoformat(row_data["event_time"])
+            except Exception:
+                pass
+        imported_rec = ImportedRecord(
+            id=uuid.uuid4(),
+            import_id=import_record.id,
+            source_type=row_data.get("source_type", "custom"),
+            external_order_id=row_data.get("external_order_id"),
+            external_payment_id=row_data.get("external_payment_id"),
+            currency=row_data.get("currency", "USD"),
+            amount=Decimal(str(row_data.get("amount", "0"))),
+            status=row_data.get("status", "unknown"),
+            event_time=event_time,
+            raw_row_json=row_data.get("raw_data", {}),
+            provenance="merchant_csv_import",
+            source_row_number=row_data.get("row_number", 0),
+        )
+        db.add(imported_rec)
+
     await db.commit()
-
-    # TODO: Actually insert the validated rows as ImportedRecord entries
-    # This would require storing the parsed data during preview
-
+    await db.refresh(import_record)
     return import_record
 
 

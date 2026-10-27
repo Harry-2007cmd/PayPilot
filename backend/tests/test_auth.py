@@ -2,6 +2,9 @@ import pytest
 from httpx import AsyncClient, ASGITransport
 from app.main import app
 from app.core.database import Base, engine
+from app.core.security import get_password_hash, verify_password
+from app.models.user import User
+from sqlalchemy import delete
 
 
 @pytest.mark.asyncio
@@ -13,6 +16,14 @@ async def test_health_check():
         data = response.json()
         assert data["status"] == "ok"
         assert "service" in data
+
+
+@pytest.mark.asyncio
+async def test_verify_password():
+    """Test that verify_password works correctly with hashed passwords."""
+    hashed = get_password_hash("demo123")
+    assert verify_password("demo123", hashed) is True
+    assert verify_password("wrongpassword", hashed) is False
 
 
 @pytest.mark.asyncio

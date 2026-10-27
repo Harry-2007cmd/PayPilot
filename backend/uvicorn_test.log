@@ -1,30 +1,82 @@
-INFO:     Started server process [26148]
+﻿python : INFO:     Started server process [18612]
+At line:1 char:420
++ ... ot\backend; python -m uvicorn app.main:app --host 127.0.0.1 --port 80 ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (INFO:     Started server process [18612]:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
 INFO:     Waiting for application startup.
-2026-10-27 11:30:14,267 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2026-10-27 11:30:14,268 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("merchants")
-2026-10-27 11:30:14,268 INFO sqlalchemy.engine.Engine [raw sql] ()
-2026-10-27 11:30:14,269 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("users")
-2026-10-27 11:30:14,269 INFO sqlalchemy.engine.Engine [raw sql] ()
-2026-10-27 11:30:14,270 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("orders")
-2026-10-27 11:30:14,270 INFO sqlalchemy.engine.Engine [raw sql] ()
-2026-10-27 11:30:14,270 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("payment_attempts")
-2026-10-27 11:30:14,270 INFO sqlalchemy.engine.Engine [raw sql] ()
-2026-10-27 11:30:14,271 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("provider_events")
-2026-10-27 11:30:14,271 INFO sqlalchemy.engine.Engine [raw sql] ()
-2026-10-27 11:30:14,271 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("investigations")
-2026-10-27 11:30:14,271 INFO sqlalchemy.engine.Engine [raw sql] ()
-2026-10-27 11:30:14,272 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("investigation_findings")
-2026-10-27 11:30:14,272 INFO sqlalchemy.engine.Engine [raw sql] ()
-2026-10-27 11:30:14,272 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("proposed_actions")
-2026-10-27 11:30:14,272 INFO sqlalchemy.engine.Engine [raw sql] ()
-2026-10-27 11:30:14,273 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("audit_events")
-2026-10-27 11:30:14,273 INFO sqlalchemy.engine.Engine [raw sql] ()
-2026-10-27 11:30:14,273 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("imports")
-2026-10-27 11:30:14,273 INFO sqlalchemy.engine.Engine [raw sql] ()
-2026-10-27 11:30:14,274 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("imported_records")
-2026-10-27 11:30:14,274 INFO sqlalchemy.engine.Engine [raw sql] ()
-2026-10-27 11:30:14,274 INFO sqlalchemy.engine.Engine COMMIT
+2026-10-27 12:20:09,777 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-27 12:20:09,778 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("merchants")
+2026-10-27 12:20:09,778 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-10-27 12:20:09,780 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("users")
+2026-10-27 12:20:09,780 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-10-27 12:20:09,781 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("orders")
+2026-10-27 12:20:09,781 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-10-27 12:20:09,782 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("payment_attempts")
+2026-10-27 12:20:09,782 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-10-27 12:20:09,783 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("provider_events")
+2026-10-27 12:20:09,783 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-10-27 12:20:09,783 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("investigations")
+2026-10-27 12:20:09,783 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-10-27 12:20:09,784 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("investigation_findings")
+2026-10-27 12:20:09,784 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-10-27 12:20:09,785 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("proposed_actions")
+2026-10-27 12:20:09,785 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-10-27 12:20:09,786 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("audit_events")
+2026-10-27 12:20:09,786 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-10-27 12:20:09,787 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("imports")
+2026-10-27 12:20:09,787 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-10-27 12:20:09,788 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("imported_records")
+2026-10-27 12:20:09,788 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-10-27 12:20:09,788 INFO sqlalchemy.engine.Engine COMMIT
 INFO:     Application startup complete.
-ERROR:    [Errno 10048] error while attempting to bind on address ('127.0.0.1', 8001): [winerror 10048] only one usage of each socket address (protocol/network address/port) is normally permitted
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
+INFO:     Uvicorn running on http://127.0.0.1:8001 (Press CTRL+C to quit)
+2026-10-27 12:20:51,815 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-27 12:20:51,861 INFO sqlalchemy.engine.Engine SELECT users.id, users.merchant_id, users.email, users.password_hash, users.role, users.created_at, users.disabled_at 
+FROM users 
+WHERE users.email = ?
+2026-10-27 12:20:51,861 INFO sqlalchemy.engine.Engine [generated in 0.00059s] ('demo@paypilot.ai',)
+2026-10-27 12:20:51,862 INFO sqlalchemy.engine.Engine ROLLBACK
+INFO:     127.0.0.1:49809 - "POST /api/auth/login HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:61355 - "POST /api/auth/refresh HTTP/1.1" 401 Unauthorized
+2026-10-27 12:20:55,785 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-27 12:20:55,785 INFO sqlalchemy.engine.Engine SELECT users.id, users.merchant_id, users.email, users.password_hash, users.role, users.created_at, users.disabled_at 
+FROM users 
+WHERE users.email = ?
+2026-10-27 12:20:55,786 INFO sqlalchemy.engine.Engine [cached since 3.925s ago] ('demo@paypilot.ai',)
+2026-10-27 12:20:55,787 INFO sqlalchemy.engine.Engine ROLLBACK
+INFO:     127.0.0.1:65038 - "POST /api/auth/login HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:65040 - "POST /api/auth/refresh HTTP/1.1" 401 Unauthorized
+2026-10-27 12:21:02,020 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-27 12:21:02,020 INFO sqlalchemy.engine.Engine SELECT users.id, users.merchant_id, users.email, users.password_hash, users.role, users.created_at, users.disabled_at 
+FROM users 
+WHERE users.email = ?
+2026-10-27 12:21:02,021 INFO sqlalchemy.engine.Engine [cached since 10.16s ago] ('demo@paypilot.ai',)
+2026-10-27 12:21:02,023 INFO sqlalchemy.engine.Engine ROLLBACK
+INFO:     127.0.0.1:60141 - "POST /api/auth/login HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:60414 - "POST /api/auth/refresh HTTP/1.1" 401 Unauthorized
+2026-10-27 12:21:02,850 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-27 12:21:02,851 INFO sqlalchemy.engine.Engine SELECT users.id, users.merchant_id, users.email, users.password_hash, users.role, users.created_at, users.disabled_at 
+FROM users 
+WHERE users.email = ?
+2026-10-27 12:21:02,851 INFO sqlalchemy.engine.Engine [cached since 10.99s ago] ('demo@paypilot.ai',)
+2026-10-27 12:21:02,853 INFO sqlalchemy.engine.Engine ROLLBACK
+INFO:     127.0.0.1:53129 - "POST /api/auth/login HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53131 - "POST /api/auth/refresh HTTP/1.1" 401 Unauthorized
+2026-10-27 12:21:03,633 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-27 12:21:03,633 INFO sqlalchemy.engine.Engine SELECT users.id, users.merchant_id, users.email, users.password_hash, users.role, users.created_at, users.disabled_at 
+FROM users 
+WHERE users.email = ?
+2026-10-27 12:21:03,633 INFO sqlalchemy.engine.Engine [cached since 11.77s ago] ('demo@paypilot.ai',)
+2026-10-27 12:21:03,635 INFO sqlalchemy.engine.Engine ROLLBACK
+INFO:     127.0.0.1:53175 - "POST /api/auth/login HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53177 - "POST /api/auth/refresh HTTP/1.1" 401 Unauthorized
+2026-10-27 12:21:04,383 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-27 12:21:04,384 INFO sqlalchemy.engine.Engine SELECT users.id, users.merchant_id, users.email, users.password_hash, users.role, users.created_at, users.disabled_at 
+FROM users 
+WHERE users.email = ?
+2026-10-27 12:21:04,384 INFO sqlalchemy.engine.Engine [cached since 12.52s ago] ('demo@paypilot.ai',)
+2026-10-27 12:21:04,386 INFO sqlalchemy.engine.Engine ROLLBACK
+INFO:     127.0.0.1:55690 - "POST /api/auth/login HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:55692 - "POST /api/auth/refresh HTTP/1.1" 401 Unauthorized
