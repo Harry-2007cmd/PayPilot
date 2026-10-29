@@ -17,6 +17,7 @@ backend/paypilot.db
 # Secrets and env files
 .env
 *.env.local
+.env.example
 
 # Frontend
 frontend/dist/
