@@ -7,7 +7,7 @@
 - Role/permission checks for approvals.
 - CSRF/CORS/session strategy appropriate to chosen auth mechanism.
 - Request validation, upload limits, rate limiting, and safe error messages.
-- Webhook signature verification and event deduplication.
+- PayPal API response validation and idempotent payment-status refresh.
 - Idempotency keys and duplicate-action prevention for payment operations.
 - Audit trail for approvals, rejects, refunds, imports, and configuration changes.
 - Redact secrets and minimize sensitive data in logs.
@@ -26,7 +26,7 @@
 
 ### Integration tests
 - PayPal Sandbox order creation/capture with configured credentials.
-- Webhook signature verification and duplicate delivery handling.
+- Payment-status refresh success and failure, including provider timeout and ambiguous outcomes.
 - Database persistence and migrations.
 - AI tool execution against seeded application records.
 - Refund request validation and supported Sandbox refund path.
@@ -35,7 +35,7 @@
 1. Sign in.
 2. Create and approve Sandbox checkout.
 3. Confirm payment/capture is persisted.
-4. Deliver/process relevant webhook.
+4. Refresh payment status directly through the PayPal API.
 5. Open an investigation or create a reproducible mismatch scenario.
 6. Ask the AI to investigate.
 7. Inspect evidence references and explanation.
@@ -45,7 +45,7 @@
 ## Deployment
 - Frontend and backend configured with environment variables.
 - Managed PostgreSQL with migrations.
-- HTTPS and publicly reachable webhook URL for deployed testing.
+- HTTPS and outbound access to the PayPal API for on-demand verification.
 - Health/readiness endpoints.
 - Seed/demo setup that does not create fake PayPal confirmations.
 - Document cold starts/sleep limitations if using a free hosting tier.
@@ -58,7 +58,7 @@ Include placeholders for:
 - `PAYPAL_CLIENT_ID`
 - `PAYPAL_CLIENT_SECRET`
 - `PAYPAL_BASE_URL` (Sandbox by default)
-- `PAYPAL_WEBHOOK_ID`
+- `PAYPAL_BASE_URL` (Sandbox by default)
 - `GEMINI_API_KEY`
 - `FRONTEND_ORIGIN`
 Never put actual credentials in documentation or version control.

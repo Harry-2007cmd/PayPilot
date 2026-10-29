@@ -5,7 +5,7 @@
 - FastAPI application/API layer.
 - Authentication and merchant authorization.
 - PayPal adapter for server-side Orders and Payments API operations.
-- Webhook endpoint and verification service.
+- On-demand payment verification service.
 - PostgreSQL persistence via SQLAlchemy and migrations.
 - Deterministic rules/reconciliation service.
 - Investigation service that assembles evidence.
@@ -20,8 +20,8 @@
 3. Client approves using the PayPal JS SDK.
 4. Backend captures using server-side credentials.
 5. Backend validates response shape and persists capture details.
-6. PayPal webhook endpoint receives an event, verifies its signature, stores event ID and payload fields needed for the app, and processes it idempotently.
-7. Local state is reconciled using authoritative API responses and verified events; do not assume webhook arrival order.
+6. The merchant can request a payment-status refresh at any time. The backend calls the PayPal API directly, validates the response, and updates local state only through valid transitions.
+7. Local state is reconciled using authoritative PayPal API responses; do not assume a local status is current without checking.
 
 ## Investigation flow
 1. User chooses an issue or asks a question.
@@ -31,6 +31,18 @@
 5. Agent summarizes findings using tool results only.
 6. UI displays evidence references and uncertainties.
 7. If action is proposed, create a pending action record; do not execute yet.
+
+## Payment verification flow
+1. Merchant requests a status refresh for a captured payment.
+2. Backend authenticates the user and confirms the payment belongs to the merchant.
+3. Backend retrieves the capture ID from the local payment record.
+4. Backend calls PayPal's Payments API to get the current capture status.
+5. Backend validates the provider response.
+6. Backend compares provider data with local records and updates state only through valid transitions.
+7. Backend records the check and its outcome in the audit history.
+8. Backend returns the result to the frontend, including last verification time.
+
+If the provider cannot be reached, the local status is not changed and the failure is recorded. PayPilot AI does not receive automatic PayPal event notifications in this MVP.
 
 ## Approved action flow
 1. User opens proposed action and sees amount, currency, target capture, reason, and risk.
@@ -50,8 +62,8 @@ flowchart TD
   API --> DB[(PostgreSQL)]
   API --> PP[PayPal API adapter]
   PP --> PPAPI[PayPal Sandbox APIs]
-  PPAPI --> WH[Verified webhook endpoint]
-  WH --> API
+  PPAPI --> REF[On-demand verification]
+  REF --> API
   API --> RULES[Deterministic rules engine]
   API --> AGENT[LangGraph investigation agent]
   AGENT --> TOOLS[Registered typed tools]

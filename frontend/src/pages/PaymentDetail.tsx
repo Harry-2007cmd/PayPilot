@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ordersApi, paymentsApi } from '../services/api';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
 import { StatusBadge } from '../components/StatusBadge';
-import { ArrowLeft, CreditCard, DollarSign, Clock, AlertTriangle, Copy } from 'lucide-react';
+import { ArrowLeft, CreditCard, DollarSign, Clock, AlertTriangle, Copy, RefreshCw } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { clsx } from 'clsx';
 import { PROVENANCE_LABELS } from '../types';
@@ -24,6 +24,7 @@ export function PaymentDetail() {
   const [timeline, setTimeline] = useState<PaymentTimelineEvent[]>([]);
   const [order, setOrder] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -139,6 +140,14 @@ export function PaymentDetail() {
                   <p className="text-lg font-semibold text-gray-900 dark:text-white">{payment.provider_status || 'N/A'}</p>
                 </div>
                 <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Last Verified</p>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                    {payment.last_verified_at
+                      ? formatDistanceToNow(new Date(payment.last_verified_at), { addSuffix: true })
+                      : 'Never'}
+                  </p>
+                </div>
+                <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                   <p className="text-sm text-gray-500 dark:text-gray-400">Created</p>
                   <p className="text-lg font-semibold text-gray-900 dark:text-white">
                     {formatDistanceToNow(new Date(payment.created_at), { addSuffix: true })}
@@ -251,7 +260,7 @@ export function PaymentDetail() {
                         <div className="absolute left-2.5 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700" />
                         <div className={clsx(
                           'relative w-3 h-3 rounded-full border-2 border-white dark:border-gray-800 z-10',
-                          event.provenance === 'paypal_webhook_verified' ? 'bg-green-500' :
+                          (event.provenance === 'paypal_api_refresh' || event.provenance === 'provider_event') ? 'bg-green-500' :
                           event.provenance === 'paypal_api' ? 'bg-blue-500' :
                           event.provenance === 'merchant_csv_import' ? 'bg-amber-500' :
                           event.provenance === 'test_fixture' ? 'bg-gray-500' : 'bg-purple-500'
@@ -329,6 +338,22 @@ export function PaymentDetail() {
                   Request Refund
                 </button>
               )}
+              <button
+                onClick={async () => {
+                  setIsRefreshing(true);
+                  try {
+                    await paymentsApi.refresh(payment.id);
+                    await fetchPaymentDetail();
+                  } finally {
+                    setIsRefreshing(false);
+                  }
+                }}
+                disabled={isRefreshing}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <RefreshCw className={clsx('w-4 h-4', isRefreshing && 'animate-spin')} />
+                {isRefreshing ? 'Refreshing...' : 'Refresh Status'}
+              </button>
             </CardContent>
           </Card>
 

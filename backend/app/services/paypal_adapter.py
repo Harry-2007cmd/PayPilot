@@ -1,6 +1,6 @@
 import httpx
 import base64
-import json
+
 from typing import Optional
 from datetime import datetime, timedelta
 
@@ -118,32 +118,4 @@ class PayPalAdapter:
             idempotency_key=idempotency_key,
         )
 
-    async def verify_webhook_signature(
-        self,
-        transmission_id: str,
-        transmission_time: str,
-        cert_url: str,
-        auth_algo: str,
-        transmission_sig: str,
-        webhook_id: str,
-        webhook_body: str,
-    ) -> bool:
-        """Verify PayPal webhook signature using PayPal's verification endpoint."""
-        if not webhook_id:
-            # In development without webhook ID, skip verification
-            return True
-
-        result = await self._request(
-            "POST",
-            "/v1/notifications/verify-webhook-signature",
-            json={
-                "auth_algo": auth_algo,
-                "cert_url": cert_url,
-                "transmission_id": transmission_id,
-                "transmission_sig": transmission_sig,
-                "transmission_time": transmission_time,
-                "webhook_id": webhook_id,
-                "webhook_body": json.loads(webhook_body),
-            },
-        )
-        return result.get("verification_status") == "SUCCESS"
+    

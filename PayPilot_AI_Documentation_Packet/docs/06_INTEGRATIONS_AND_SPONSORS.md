@@ -6,8 +6,8 @@
 - Configure client ID and secret as backend environment variables.
 - Use Orders API for create/capture and relevant Payments API operations for eligible refunds.
 - Use the JavaScript SDK for buyer approval.
-- Configure webhook event subscriptions that are actually needed by the implemented flow.
-- Verify webhook signatures using the supported PayPal verification mechanism.
+- Configure on-demand payment verification through the PayPal Payments API.
+- Verify provider responses before updating local state.
 - Document Sandbox limitations and the exact API paths tested.
 
 ## AI
@@ -23,7 +23,7 @@ Development support for API understanding/code generation where available. It is
 Create a collection for auth, order creation, payment flow, investigation endpoints, imports, and approval actions. Use environment variables without committing credentials. Include expected responses and negative cases.
 
 ## Render
-Candidate host for frontend/backend. Confirm free-tier availability, sleep behaviour, persistent storage limitations, environment variables, outbound access, and webhook reachability before relying on it. PostgreSQL may be hosted separately (e.g. Supabase) if suitable.
+Candidate host for frontend/backend. Confirm free-tier availability, sleep behaviour, persistent storage limitations, environment variables, and outbound access to the PayPal API before relying on it. PostgreSQL may be hosted separately (e.g. Supabase) if suitable.
 
 ## Marketplace/store connectors
 Future connector targets may include Amazon, Flipkart, Shopify, WooCommerce, and other major sources. The MVP must not claim these are live. Start with a generic CSV import format and optional Amazon SP-API Sandbox exploration if time allows and official access is available. Access to a seller account, app registration, permissions, regional availability, and API terms may be required for live data.

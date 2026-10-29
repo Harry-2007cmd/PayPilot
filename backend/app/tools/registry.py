@@ -20,6 +20,7 @@ class ToolRegistry:
         from app.tools.find_tool import find_related_records
         from app.tools.resolution_tool import prepare_resolution
         from app.tools.summary_tool import get_investigation_summary
+        from app.tools.refresh_tool import refresh_payment_status
 
         self._tools = {
             "get_order_details": get_order_details,
@@ -30,6 +31,7 @@ class ToolRegistry:
             "run_payment_rules": run_payment_rules,
             "get_investigation_summary": get_investigation_summary,
             "prepare_resolution": prepare_resolution,
+            "refresh_payment_status": refresh_payment_status,
         }
 
     def list_tools(self) -> list[str]:

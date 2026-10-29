@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.database import init_db, close_db
-from app.api import auth, orders, paypal, payments, webhooks, investigations, actions, imports
+from app.api import auth, orders, paypal, payments, investigations, actions, imports, config
 
 
 @asynccontextmanager
@@ -43,7 +43,6 @@ app.include_router(auth.router)
 app.include_router(orders.router)
 app.include_router(paypal.router)
 app.include_router(payments.router)
-app.include_router(webhooks.router)
 app.include_router(investigations.router)
 app.include_router(actions.router)
 app.include_router(imports.router)

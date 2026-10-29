@@ -4,19 +4,50 @@ __pycache__/
 *.pyo
 *.pyd
 *.egg-info/
- .git/
+
+# Virtual environments
 venv/
 env/
-/venv
-/env
+.venv/
 
 # Database
 paypilot.db
+backend/paypilot.db
 
 # Secrets and env files
 .env
-.env.example
+*.env.local
+
+# Frontend
+frontend/dist/
+frontend/node_modules/
+frontend/.vite/
+
+# Test caches
+.pytest_cache/
+backend/.pytest_cache/
+frontend/.pytest_cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+backend/uvicorn_test.log
+frontend/frontend.log
 
 # Uploads
 uploads/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
 

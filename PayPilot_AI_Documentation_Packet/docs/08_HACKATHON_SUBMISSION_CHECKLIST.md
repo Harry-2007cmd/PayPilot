@@ -30,7 +30,11 @@ Use the official hackathon rules provided by the entrant as the controlling sour
 6. 2:35–2:50 — Explain PayPal + AI integration and impact.
 
 ## Judging alignment
-- Technological implementation: real Sandbox flow, webhook verification, controlled AI tools.
+- Technological implementation: real Sandbox flow, controlled AI tools.
+
+Note: PayPilot AI does not receive automatic PayPal event notifications in this MVP. Merchants can refresh payment status or initiate an investigation when they need an updated provider check.
+
+The end-to-end payment flow is: Sandbox checkout → backend capture → persisted payment → on-demand PayPal API verification → deterministic issue detection → AI investigation → evidence-backed recommendation → human-approved action → audit history.
 - Design: cohesive and usable investigation experience.
 - Potential impact: specific operational pain and clear time-saving outcome.
 - Innovation: evidence-backed multi-step investigation and safe action preparation.

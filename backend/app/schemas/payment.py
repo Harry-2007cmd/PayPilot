@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 from decimal import Decimal
 from datetime import datetime
@@ -14,7 +14,7 @@ class PaymentAttemptCreate(BaseModel):
     amount: Decimal = Field(..., gt=0, max_digits=19, decimal_places=4)
     status: str
     provider_status: Optional[str] = None
-    provenance: str = Field(..., pattern="^(paypal_api|paypal_webhook_verified|merchant_csv_import|test_fixture)$")
+    provenance: str = Field(..., pattern="^(paypal_api|paypal_api_refresh|merchant_csv_import|test_fixture)$")
 
 
 class PaymentAttemptUpdate(BaseModel):
@@ -40,8 +40,7 @@ class PaymentAttemptOut(BaseModel):
     provenance: str
     last_verified_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PaymentAttemptListResponse(BaseModel):

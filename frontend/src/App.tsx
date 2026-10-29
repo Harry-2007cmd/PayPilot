@@ -9,10 +9,12 @@ import { InvestigationDetail } from './pages/InvestigationDetail';
 import { InvestigationCreate } from './pages/InvestigationCreate';
 import { AICopilot } from './pages/AICopilot';
 import { Approvals } from './pages/Approvals';
+import { ApprovalDetail } from './pages/ApprovalDetail';
 import { Audit } from './pages/Audit';
 import { Imports } from './pages/Imports';
 import { Payments } from './pages/Payments';
 import { PaymentDetail } from './pages/PaymentDetail';
+import { Settings } from './pages/Settings';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -49,11 +51,11 @@ function App() {
         <Route path="investigations/:id" element={<InvestigationDetail />} />
         <Route path="ai-copilot" element={<AICopilot />} />
         <Route path="approvals" element={<Approvals />} />
-        <Route path="approvals/new" element={<div className="p-6 text-center text-gray-500">Create Approval — navigate from Investigation Detail</div>} />
-        <Route path="approvals/:id" element={<div className="p-6 text-center text-gray-500">Approval Detail — not yet implemented</div>} />
+        <Route path="approvals/new" element={<Approvals />} />
+        <Route path="approvals/:id" element={<ApprovalDetail />} />
         <Route path="audit" element={<Audit />} />
         <Route path="imports" element={<Imports />} />
-        <Route path="settings" element={<div className="p-6 text-center text-gray-500">Settings (Coming Soon)</div>} />
+        <Route path="settings" element={<Settings />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

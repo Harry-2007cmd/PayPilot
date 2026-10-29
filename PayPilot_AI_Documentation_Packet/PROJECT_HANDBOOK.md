@@ -14,7 +14,6 @@ The product is not a generic finance chatbot and not merely a dashboard. Its cor
 - FastAPI application/API layer.
 - Authentication and merchant authorization.
 - PayPal adapter for server-side Orders and Payments API operations.
-- Webhook endpoint and verification service.
 - PostgreSQL persistence via SQLAlchemy and migrations.
 - Deterministic rules/reconciliation service.
 - Investigation service that assembles evidence.
@@ -29,8 +28,11 @@ The product is not a generic finance chatbot and not merely a dashboard. Its cor
 3. Client approves using the PayPal JS SDK.
 4. Backend captures using server-side credentials.
 5. Backend validates response shape and persists capture details.
-6. PayPal webhook endpoint receives an event, verifies its signature, stores event ID and payload fields needed for the app, and processes it idempotently.
-7. Local state is reconciled using authoritative API responses and verified events; do not assume webhook arrival order.
+6. Local state is reconciled using authoritative API responses and on-demand PayPal API verification; no automatic webhook events are consumed in this MVP.
+
+Note: PayPilot AI does not receive automatic PayPal event notifications in this MVP. Merchants can refresh payment status or initiate an investigation when they need an updated provider check.
+
+The end-to-end payment flow is: Sandbox checkout → backend capture → persisted payment → on-demand PayPal API verification → deterministic issue detection → AI investigation → evidence-backed recommendation → human-approved action → audit history.
 
 ## Investigation flow
 1. User chooses an issue or asks a question.
@@ -59,8 +61,6 @@ flowchart TD
   API --> DB[(PostgreSQL)]
   API --> PP[PayPal API adapter]
   PP --> PPAPI[PayPal Sandbox APIs]
-  PPAPI --> WH[Verified webhook endpoint]
-  WH --> API
   API --> RULES[Deterministic rules engine]
   API --> AGENT[LangGraph investigation agent]
   AGENT --> TOOLS[Registered typed tools]
@@ -74,22 +74,21 @@ flowchart TD
 - FR-02: Create a local order and PayPal Sandbox order from the backend.
 - FR-03: Complete buyer approval and capture using the PayPal flow.
 - FR-04: Persist local order and payment attempt with provider IDs and provenance.
-- FR-05: Receive, verify, store, and idempotently process supported webhooks.
-- FR-06: List/search/filter orders, payments, and investigations.
-- FR-07: Show a payment timeline and source/trust labels.
-- FR-08: Run deterministic rules for selected mismatch cases.
-- FR-09: Allow a user to ask an investigation question in natural language.
-- FR-10: AI calls only registered backend tools and returns structured findings.
-- FR-11: Findings include evidence references, known facts, uncertainties, and recommended next step.
-- FR-12: Prepare and approve a supported refund with authorization and eligibility checks.
-- FR-13: Record investigation and sensitive action audit events.
-- FR-14: Import external records through documented CSV templates with preview and validation.
-- FR-15: Clearly separate sandbox, API-verified, imported, and fixture records.
-- FR-16: Show useful empty, loading, failure, and retry states.
+- FR-05: List/search/filter orders, payments, and investigations.
+- FR-06: Show a payment timeline and source/trust labels.
+- FR-07: Run deterministic rules for selected mismatch cases.
+- FR-08: Allow a user to ask an investigation question in natural language.
+- FR-09: AI calls only registered backend tools and returns structured findings.
+- FR-10: Findings include evidence references, known facts, uncertainties, and recommended next step.
+- FR-11: Prepare and approve a supported refund with authorization and eligibility checks.
+- FR-12: Record investigation and sensitive action audit events.
+- FR-13: Import external records through documented CSV templates with preview and validation.
+- FR-14: Clearly separate sandbox, API-verified, imported, and fixture records.
+- FR-15: Show useful empty, loading, failure, and retry states.
 
 ## Non-functional requirements
 - Security: secrets stay server-side; all records are merchant-scoped.
-- Reliability: idempotent webhook processing; safe handling of duplicate requests and provider timeouts.
+- Reliability: safe handling of duplicate requests and provider timeouts; payment status is verified on demand rather than assumed current.
 - Auditability: sensitive actions have actor, time, target, decision, and outcome.
 - Explainability: AI claims map to stored evidence references.
 - Usability: an issue should be understandable without reading raw logs.
@@ -103,7 +102,7 @@ A reviewer can:
 2. Start the application following the README.
 3. Sign in using documented demo instructions.
 4. complete a Sandbox checkout and see a persisted order/payment.
-5. See webhook processing status without duplicate event side effects.
+5. Refresh payment status on demand and inspect its timeline.
 6. open an issue and inspect its timeline.
 7. ask the AI to investigate it and receive evidence-grounded output.
 8. review/approve a supported test refund and see the result/audit record.
@@ -126,10 +125,6 @@ A reviewer can:
 ### payment_attempts
 - id, merchant_id, order_id, provider, provider_order_id, capture_id, currency, amount, status, provider_status, created_at, updated_at, provenance, last_verified_at
 - Do not assume one order has only one attempt.
-
-### provider_events
-- id, merchant_id, provider, provider_event_id, event_type, event_time, received_at, verification_status, processing_status, payload_minimized_json
-- Unique provider event ID per provider/account scope. Store only the fields required for operation/audit.
 
 ### investigations
 - id, merchant_id, created_by, issue_type, status, title, order_id, payment_attempt_id, priority, opened_at, resolved_at
@@ -159,8 +154,7 @@ Create a provider-neutral interface such as:
 - `get_order(...)`
 - `get_capture(...)`
 - `refund_capture(...)`
-- `verify_webhook(...)`
-- `normalize_event(...)`
+- `get_payment_details(...)` (on-demand verification)
 
 Implement PayPal first. Marketplace/store adapters should be added independently. CSV is an ingestion adapter, not a live API integration.
 
@@ -218,8 +212,7 @@ The agent cannot approve actions, change roles, bypass checks, call arbitrary UR
 - Configure client ID and secret as backend environment variables.
 - Use Orders API for create/capture and relevant Payments API operations for eligible refunds.
 - Use the JavaScript SDK for buyer approval.
-- Configure webhook event subscriptions that are actually needed by the implemented flow.
-- Verify webhook signatures using the supported PayPal verification mechanism.
+- Note: Webhook event subscriptions are not consumed in this MVP; payment status is verified on demand via the PayPal API.
 - Document Sandbox limitations and the exact API paths tested.
 
 ## AI
@@ -235,7 +228,7 @@ Development support for API understanding/code generation where available. It is
 Create a collection for auth, order creation, payment flow, investigation endpoints, imports, and approval actions. Use environment variables without committing credentials. Include expected responses and negative cases.
 
 ## Render
-Candidate host for frontend/backend. Confirm free-tier availability, sleep behaviour, persistent storage limitations, environment variables, outbound access, and webhook reachability before relying on it. PostgreSQL may be hosted separately (e.g. Supabase) if suitable.
+Candidate host for frontend/backend. Confirm free-tier availability, sleep behaviour, persistent storage limitations, environment variables, and outbound access before relying on it. PostgreSQL may be hosted separately (e.g. Supabase) if suitable.
 
 ## Marketplace/store connectors
 Future connector targets may include Amazon, Flipkart, Shopify, WooCommerce, and other major sources. The MVP must not claim these are live. Start with a generic CSV import format and optional Amazon SP-API Sandbox exploration if time allows and official access is available. Access to a seller account, app registration, permissions, regional availability, and API terms may be required for live data.
@@ -258,8 +251,8 @@ Sponsor tool use and sponsor prize eligibility are different. Read the active pr
 - Role/permission checks for approvals.
 - CSRF/CORS/session strategy appropriate to chosen auth mechanism.
 - Request validation, upload limits, rate limiting, and safe error messages.
-- Webhook signature verification and event deduplication.
 - Idempotency keys and duplicate-action prevention for payment operations.
+- PayPal API response validation and on-demand payment-status refresh.
 - Audit trail for approvals, rejects, refunds, imports, and configuration changes.
 - Redact secrets and minimize sensitive data in logs.
 - Validate imported files and guard against formula injection when exporting CSV.
@@ -277,7 +270,7 @@ Sponsor tool use and sponsor prize eligibility are different. Read the active pr
 
 ### Integration tests
 - PayPal Sandbox order creation/capture with configured credentials.
-- Webhook signature verification and duplicate delivery handling.
+- Payment-status refresh success and failure, including provider timeout and ambiguous outcomes.
 - Database persistence and migrations.
 - AI tool execution against seeded application records.
 - Refund request validation and supported Sandbox refund path.
@@ -286,7 +279,7 @@ Sponsor tool use and sponsor prize eligibility are different. Read the active pr
 1. Sign in.
 2. Create and approve Sandbox checkout.
 3. Confirm payment/capture is persisted.
-4. Deliver/process relevant webhook.
+4. Refresh payment status directly through the PayPal API.
 5. Open an investigation or create a reproducible mismatch scenario.
 6. Ask the AI to investigate.
 7. Inspect evidence references and explanation.
@@ -296,7 +289,7 @@ Sponsor tool use and sponsor prize eligibility are different. Read the active pr
 ## Deployment
 - Frontend and backend configured with environment variables.
 - Managed PostgreSQL with migrations.
-- HTTPS and publicly reachable webhook URL for deployed testing.
+- HTTPS for deployed testing.
 - Health/readiness endpoints.
 - Seed/demo setup that does not create fake PayPal confirmations.
 - Document cold starts/sleep limitations if using a free hosting tier.
@@ -309,7 +302,6 @@ Include placeholders for:
 - `PAYPAL_CLIENT_ID`
 - `PAYPAL_CLIENT_SECRET`
 - `PAYPAL_BASE_URL` (Sandbox by default)
-- `PAYPAL_WEBHOOK_ID`
 - `GEMINI_API_KEY`
 - `FRONTEND_ORIGIN`
 Never put actual credentials in documentation or version control.
@@ -330,8 +322,11 @@ Never put actual credentials in documentation or version control.
 ## Phase 2 — PayPal Sandbox payment
 - Configure Sandbox buyer/business accounts.
 - Implement server-side order creation, client approval, capture, and persistence.
-- Implement webhook verification and idempotent event processing.
 - Tests: API integration where credentials are present; unit tests for error paths.
+
+Note: PayPilot AI does not receive automatic PayPal event notifications in this MVP. Merchants can refresh payment status or initiate an investigation when they need an updated provider check.
+
+The end-to-end payment flow is: Sandbox checkout → backend capture → persisted payment → on-demand PayPal API verification → deterministic issue detection → AI investigation → evidence-backed recommendation → human-approved action → audit history.
 
 ## Phase 3 — Deterministic investigation engine
 - Define issue enums and rule checks.
@@ -360,7 +355,7 @@ Never put actual credentials in documentation or version control.
 
 ## Phase 7 — Imports, polish, deployment
 - Add CSV template, preview, validation, import history, and source labels.
-- Deploy with HTTPS and reachable webhook URL.
+- Deploy with HTTPS.
 - Run end-to-end demo and regression tests.
 - Publish setup guide, license, and demo script.
 

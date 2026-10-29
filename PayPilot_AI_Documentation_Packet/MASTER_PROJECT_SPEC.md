@@ -6,18 +6,20 @@ PayPilot AI, internally described as **The Payment Detective**, is an AI-assiste
 The product is not a generic finance chatbot and not merely a dashboard. Its core workflow is:
 **detect or receive an issue → retrieve relevant records → run deterministic checks → explain evidence and uncertainty → recommend a next step → obtain human approval for consequential actions → execute supported action → audit the result.**
 
+The live payment workflow is: **Sandbox checkout → backend capture → persisted payment → on-demand PayPal API verification → deterministic issue detection → AI investigation → evidence-backed recommendation → human-approved action → audit history.**
+
 ## 2. Target users and problem
 ### Primary user
 A small or medium-sized merchant or support/operations employee who handles online orders and payments and needs to investigate payment-related discrepancies.
 
 ### Problem
-Payment evidence can be spread across a merchant's local order database, PayPal order/capture details, webhook events, and manually imported external records. Manually comparing IDs, statuses, amounts, and timestamps is time-consuming and error-prone.
+Payment evidence can be spread across a merchant's local order database, PayPal order/capture details, and manually imported external records. Manually comparing IDs, statuses, amounts, and timestamps is time-consuming and error-prone.
 
 ### Value proposition
 PayPilot AI shortens the path from a payment question to an evidence-backed investigation and safe next step. It must distinguish verified facts from inferences and explicitly state when evidence is missing.
 
 ## 3. Hackathon fit
-The hackathon requires an application that centrally integrates the PayPal developer platform using its free Sandbox environment and an AI tool/model/platform. The PayPal integration must be a genuine, meaningful part of the product. PayPilot AI uses PayPal Sandbox for checkout/capture and relevant provider events, while AI uses controlled tools to investigate the resulting application records.
+The hackathon requires an application that centrally integrates the PayPal developer platform using its free Sandbox environment and an AI tool/model/platform. The PayPal integration must be a genuine, meaningful part of the product. PayPilot AI uses PayPal Sandbox for checkout/capture and on-demand provider verification, while AI uses controlled tools to investigate the resulting application records.
 
 Sponsor tools are optional. Planned candidates:
 - AG Grid AG Studio: interactive investigation and analytics UI; integrate substantively if access and terms permit.
@@ -31,7 +33,7 @@ The AI model/orchestration choice is Gemini API + LangGraph unless implementatio
 2. A merchant can initiate a PayPal Sandbox checkout.
 3. The backend creates and captures PayPal orders using server-side credentials.
 4. Local orders and payment attempts persist in PostgreSQL with provider identifiers, amounts, currencies, statuses, and timestamps.
-5. Webhooks are signature-verified and processed idempotently.
+5. Payment status can be refreshed on demand through the PayPal API.
 6. A deterministic rules engine can flag a small set of testable payment inconsistencies.
 7. The merchant can open an investigation and inspect a transaction/event timeline.
 8. The AI agent can call registered backend tools to retrieve evidence and explain findings.
@@ -76,7 +78,7 @@ A flagged issue is an investigation lead, not proof of fraud or loss.
 ## 8. Data trust and provenance
 Every record must identify its origin and trust state, such as:
 - `paypal_api` — retrieved from PayPal API.
-- `paypal_webhook_verified` — received and signature-verified from PayPal.
+- `paypal_api_refresh` — verified via a direct on-demand PayPal API status check.
 - `merchant_csv_import` — uploaded by a merchant; not independently verified by PayPal.
 - `test_fixture` — synthetic test data, visibly labelled.
 Never present CSV/imported/fixture data as verified PayPal records.
@@ -89,7 +91,7 @@ The model is an investigator and explainer, not the source of financial truth. I
 - Use authenticated, merchant-scoped API requests.
 - Validate all inputs with typed schemas.
 - Use decimal-safe amounts and explicit currency.
-- Verify webhooks and make event processing idempotent.
+- Verify provider responses and make event processing idempotent.
 - Add unique constraints and duplicate-action protections.
 - Use audit records for sensitive actions.
 - Do not log secrets, full payment credentials, or unnecessary personal data.
@@ -97,7 +99,9 @@ The model is an investigator and explainer, not the source of financial truth. I
 - Do not retry non-idempotent operations blindly.
 
 ## 11. Success criteria
-The project is successful when a reviewer can run the documented demo and observe a real Sandbox payment flow, persisted records, a reproducible issue investigation, an AI explanation grounded in retrieved evidence, and an auditable approval-controlled action. The UI must be coherent and the repository must explain how to configure and run the system.
+The project is successful when a reviewer can run the documented demo and observe a real Sandbox payment flow, persisted records, a reproducible issue investigation, an AI explanation grounded in retrieved evidence, and an auditable approval-controlled action. A reviewer can also refresh a payment status directly through the PayPal API and see the provider response reflected in local records.
+
+PayPilot AI does not receive automatic PayPal event notifications in this MVP. Merchants can refresh payment status or initiate an investigation when they need an updated provider check. The UI must be coherent and the repository must explain how to configure and run the system.
 
 ## 12. Assumptions and open implementation choices
 - Working name is PayPilot AI; check name/branding before public release.

@@ -23,7 +23,6 @@ class Settings(BaseSettings):
     PAYPAL_CLIENT_ID: str = Field(default="")
     PAYPAL_CLIENT_SECRET: str = Field(default="")
     PAYPAL_BASE_URL: str = Field(default="https://api-m.sandbox.paypal.com")
-    PAYPAL_WEBHOOK_ID: str = Field(default="")
 
     # AI / Gemini
     GEMINI_API_KEY: str = Field(default="")

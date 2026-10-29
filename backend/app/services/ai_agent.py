@@ -11,7 +11,6 @@ from app.models.investigation import Investigation, InvestigationFinding
 from app.models.order import Order
 from app.models.payment import PaymentAttempt
 from app.models.event import ProviderEvent
-from app.models.action import ProposedAction
 from app.models.audit import AuditEvent
 from app.services.rules_engine import RulesEngine
 from app.services.paypal_adapter import PayPalAdapter
@@ -118,10 +117,10 @@ class AIAgent:
                         events.append({
                             "event_time": event.event_time.isoformat(),
                             "event_type": event.event_type,
-                            "source": "paypal_webhook_verified",
+                            "source": "provider_event",
                             "status": event.payload_minimized_json.get("status", "unknown"),
                             "details": event.payload_minimized_json,
-                            "provenance": "paypal_webhook_verified",
+                            "provenance": "provider_event",
                         })
 
         return sorted(events, key=lambda e: e["event_time"])
@@ -178,40 +177,16 @@ class AIAgent:
         merchant_id: uuid.UUID,
         proposed_by: uuid.UUID
     ) -> dict:
-        """Create a pending proposed action (never executes)."""
-        from app.models.investigation import Investigation
-
-        inv_result = await self.db.execute(
-            select(Investigation).where(
-                Investigation.id == investigation_id,
-                Investigation.merchant_id == merchant_id
-            )
+        """Create a pending proposed action (never executes). Spec 04 tool 9."""
+        from app.tools.resolution_tool import prepare_resolution as _prepare
+        return await _prepare(
+            db=self.db,
+            merchant_id=str(merchant_id),
+            investigation_id=str(investigation_id),
+            action_type=action_type,
+            parameters=parameters,
+            proposed_by=str(proposed_by),
         )
-        investigation = inv_result.scalar_one_or_none()
-        if not investigation:
-            return {"error": "Investigation not found"}
-
-        # Check for existing pending action
-        existing = await self.db.execute(
-            select(ProposedAction).where(
-                ProposedAction.investigation_id == investigation_id,
-                ProposedAction.status == "pending"
-            )
-        )
-        if existing.scalar_one_or_none():
-            return {"error": "Pending action already exists for this investigation"}
-
-        return {
-            "message": "Action proposal prepared - use the approval endpoint to create it",
-            "proposed_action": {
-                "investigation_id": str(investigation_id),
-                "action_type": action_type,
-                "target_capture_id": parameters.get("target_capture_id"),
-                "currency": parameters.get("currency"),
-                "amount": parameters.get("amount"),
-                "reason": parameters.get("reason"),
-            },
-        }
 
     async def get_investigation_summary(self, investigation_id: uuid.UUID, merchant_id: uuid.UUID) -> dict:
         result = await self.db.execute(
@@ -241,6 +216,52 @@ class AIAgent:
             ],
         }
 
+    async def refresh_payment_status(self, payment_attempt_id: uuid.UUID, merchant_id: uuid.UUID) -> dict:
+        """Refresh a payment's status from PayPal and return comparison."""
+        payment_result = await self.db.execute(
+            select(PaymentAttempt).where(
+                PaymentAttempt.id == payment_attempt_id,
+                PaymentAttempt.merchant_id == merchant_id
+            )
+        )
+        payment = payment_result.scalar_one_or_none()
+        if not payment:
+            return {"error": "Payment not found"}
+        if not payment.capture_id:
+            return {"error": "No capture ID to refresh"}
+
+        old_status = payment.status
+        old_provider_status = payment.provider_status
+
+        try:
+            adapter = PayPalAdapter()
+            capture_data = await adapter.get_capture(payment.capture_id)
+            new_provider_status = capture_data.get("status", "UNKNOWN")
+
+            discrepancies = []
+            if old_provider_status != new_provider_status:
+                discrepancies.append({
+                    "field": "provider_status",
+                    "local": old_provider_status,
+                    "provider": new_provider_status,
+                })
+
+            return {
+                "payment_id": str(payment.id),
+                "capture_id": payment.capture_id,
+                "old_status": old_status,
+                "old_provider_status": old_provider_status,
+                "new_provider_status": new_provider_status,
+                "verified": True,
+                "discrepancies": discrepancies,
+            }
+        except Exception as e:
+            return {
+                "payment_id": str(payment.id),
+                "verified": False,
+                "error": f"Could not reach PayPal: {str(e)[:200]}",
+            }
+
     # ===== Main Investigation Flow =====
 
     async def investigate(
@@ -250,6 +271,7 @@ class AIAgent:
         order_id: Optional[uuid.UUID] = None,
         payment_attempt_id: Optional[uuid.UUID] = None,
         question: Optional[str] = None,
+        proposed_by: Optional[uuid.UUID] = None,
     ) -> dict:
         """Run full investigation using deterministic checks and AI reasoning."""
         facts = []
@@ -271,7 +293,7 @@ class AIAgent:
                 facts.append({
                     "statement": f"Order {order_details['external_order_id']} exists with amount {order_details['total_amount']} {order_details['currency']}",
                     "evidence": "order",
-                    "verified": order_details["provenance"] in ["paypal_api", "paypal_webhook_verified"],
+                    "verified": order_details["provenance"] in ["paypal_api", "paypal_api_refresh"],
                 })
 
         if payment_attempt_id:
@@ -281,7 +303,7 @@ class AIAgent:
                 facts.append({
                     "statement": f"Payment {payment_details['capture_id']} exists with amount {payment_details['amount']} {payment_details['currency']}",
                     "evidence": "payment",
-                    "verified": payment_details["provenance"] in ["paypal_api", "paypal_webhook_verified"],
+                    "verified": payment_details["provenance"] in ["paypal_api", "paypal_api_refresh"],
                 })
 
         # Step 3: Add rule findings as facts/uncertainties
@@ -302,10 +324,16 @@ class AIAgent:
         # Step 4: Determine recommendation
         recommendation = self._generate_recommendation(rule_findings, order_id, payment_attempt_id)
 
-        # Step 5: Check if action is proposed
-        if recommendation.get("action_type") == "refund":
-            # Prepare action - will be created via API
-            proposed_action_id = None  # Created separately via API
+        # Step 5: Create a pending proposal when a refund is recommended
+        if recommendation.get("action_type") == "refund" and payment_attempt_id and proposed_by and investigation_id:
+            payment_details = evidence_refs.get("payment") or {}
+            if "error" not in payment_details and payment_details.get("capture_id"):
+                proposed_action_id = await self._propose_refund(
+                    investigation_id=investigation_id,
+                    payment_details=payment_details,
+                    merchant_id=merchant_id,
+                    proposed_by=proposed_by,
+                )
 
         # Step 6: Generate summary
         summary = self._generate_summary(facts, uncertainties, rule_findings, question)
@@ -373,6 +401,34 @@ class AIAgent:
                 recommendation=f.get("recommendation", ""),
             ))
         await self.db.commit()
+
+    async def _propose_refund(
+        self,
+        investigation_id: uuid.UUID,
+        payment_details: dict,
+        merchant_id: uuid.UUID,
+        proposed_by: uuid.UUID,
+    ) -> Optional[uuid.UUID]:
+        """Create a pending refund proposal from the verified payment. Never executes."""
+        from app.tools.resolution_tool import prepare_resolution as _prepare
+
+        result = await _prepare(
+            db=self.db,
+            merchant_id=str(merchant_id),
+            investigation_id=str(investigation_id),
+            action_type="refund",
+            parameters={
+                "target_capture_id": payment_details.get("capture_id"),
+                "currency": payment_details.get("currency"),
+                "amount": payment_details.get("amount"),
+                "reason": "Refund proposed by AI investigation based on deterministic mismatch findings",
+                "idempotency_key": f"ai-refund:{payment_details.get('capture_id')}:{investigation_id}",
+            },
+            proposed_by=str(proposed_by),
+        )
+        if "error" in result:
+            return None
+        return uuid.UUID(result["proposed_action"]["id"])
 
     def _generate_recommendation(self, rule_findings: list, order_id: Optional[uuid.UUID], payment_attempt_id: Optional[uuid.UUID]) -> dict:
         if not rule_findings:

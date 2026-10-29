@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 from decimal import Decimal
 from datetime import datetime
@@ -37,8 +37,7 @@ class ProposedActionOut(BaseModel):
     idempotency_key: str
     outcome_json: dict
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ProposedActionListResponse(BaseModel):
@@ -60,8 +59,7 @@ class AuditEventOut(BaseModel):
     correlation_id: Optional[str] = None
     details_redacted_json: dict
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AuditEventListResponse(BaseModel):

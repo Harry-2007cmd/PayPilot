@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 from decimal import Decimal
 from datetime import datetime
@@ -11,7 +11,7 @@ class OrderCreate(BaseModel):
     currency: str = Field(..., min_length=3, max_length=3)
     total_amount: Decimal = Field(..., gt=0, max_digits=19, decimal_places=4)
     status: str = Field(default="created")
-    provenance: str = Field(..., pattern="^(local|paypal_api|paypal_webhook_verified|merchant_csv_import|test_fixture)$")
+    provenance: str = Field(..., pattern="^(local|paypal_api|paypal_api_refresh|merchant_csv_import|test_fixture)$")
     metadata_json: dict = Field(default_factory=dict)
 
 
@@ -34,8 +34,7 @@ class OrderOut(BaseModel):
     provenance: str
     metadata_json: dict
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class OrderListResponse(BaseModel):

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { importsApi, webhooksApi } from '../services/api';
+import { importsApi } from '../services/api';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from './ui/Card';
 import { StatusBadge } from '../components/StatusBadge';
 import { Upload, FileText, AlertCircle, ShieldCheck } from 'lucide-react';
@@ -7,7 +7,6 @@ import { formatDistanceToNow } from 'date-fns';
 
 export function Imports() {
   const [imports, setImports] = useState<any[]>([]);
-  const [webhookStatus, setWebhookStatus] = useState<any>(null);
   const [uploading, setUploadLoading] = useState(false);
   const [preview, setPreview] = useState<any>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -18,12 +17,8 @@ export function Imports() {
 
   const fetchData = async () => {
     try {
-      const [importsRes, webhookRes] = await Promise.all([
-        importsApi.list(),
-        webhooksApi.status(),
-      ]);
+      const importsRes = await importsApi.list();
       setImports(importsRes.data.items);
-      setWebhookStatus(webhookRes.data);
     } catch (error) {
       console.error('Failed to fetch imports data:', error);
     }
@@ -104,36 +99,7 @@ export function Imports() {
             </CardFooter>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Webhook Health</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {webhookStatus ? (
-                <div className="space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-500 dark:text-gray-400">Verified Events</span>
-                    <span className="font-medium text-green-600">{webhookStatus.verified}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-500 dark:text-gray-400">Failed Verification</span>
-                    <span className="font-medium text-red-600">{webhookStatus.failed}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-500 dark:text-gray-400">Duplicate Events</span>
-                    <span className="font-medium text-gray-600">{webhookStatus.duplicate}</span>
-                  </div>
-                  <div className="pt-2 border-t border-gray-100 dark:border-gray-700 flex justify-between text-sm font-semibold">
-                    <span>Total Processed</span>
-                    <span>{webhookStatus.total_events}</span>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-sm text-gray-500 text-center py-4">Status unavailable</p>
-              )}
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Imports */}
         <div className="lg:col-span-2 space-y-6">

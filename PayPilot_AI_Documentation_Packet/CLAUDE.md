@@ -24,11 +24,10 @@ Before editing code, read:
 8. Never let the language model directly run arbitrary SQL, execute shell commands, or authorize payments/refunds.
 9. The model may request only registered, typed backend tools. The backend must validate inputs and enforce merchant ownership and permissions.
 10. Payment amounts must use decimal-safe arithmetic and explicit currency codes. Never add different currencies without a documented conversion process.
-11. Verify PayPal webhook signatures using the supported verification process before trusting event data. Make webhook handling idempotent.
-12. Require authenticated human approval for refunds or other consequential operations. Revalidate the payment and action immediately before execution.
-13. Do not create fake success responses that appear to be real PayPal data. Test fixtures must be clearly marked as fixtures.
-14. If an API credential, sponsor tool access, or account approval is unavailable, implement a clearly labelled adapter boundary and document the limitation; do not silently substitute a mock.
-15. Follow current official provider documentation for endpoints, SDKs, versions, permissions, and terms.
+11. Require authenticated human approval for refunds or other consequential operations. Revalidate the payment and action immediately before execution.
+12. Do not create fake success responses that appear to be real PayPal data. Test fixtures must be clearly marked as fixtures.
+13. If an API credential, sponsor tool access, or account approval is unavailable, implement a clearly labelled adapter boundary and document the limitation; do not silently substitute a mock.
+14. Follow current official provider documentation for endpoints, SDKs, versions, permissions, and terms.
 
 ## Definition of done for a phase
 - The feature works on the intended platform.

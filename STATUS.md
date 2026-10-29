@@ -45,11 +45,11 @@
 
 ## ⚠️ Known Issues / Blockers
 
-1. **PayPal webhook signature bypass in dev** — `paypal_adapter.verify_webhook_signature` returns `True` when `PAYPAL_WEBHOOK_ID` is unset. Set it from the PayPal Dashboard for production.
-2. **No PayPal credentials in `.env`** — `PAYPAL_CLIENT_ID/SECRET` are placeholders. The live create/capture/refund paths are untested without real Sandbox credentials.
-3. **`approvals/:id` route is still a placeholder** — no detail page for a single approval.
-4. **Settings page is a placeholder** — no settings UI.
-5. **Pydantic deprecation warnings** — class-based `config` in schemas (non-blocking, just warnings).
+1. **No PayPal credentials in `.env`** — `PAYPAL_CLIENT_ID/SECRET` are placeholders. The live create/capture/refund paths are untested without real Sandbox credentials.
+2. **`approvals/:id` route is still a placeholder** — no detail page for a single approval.
+3. **Settings page is a placeholder** — no settings UI.
+4. **Pydantic deprecation warnings** — class-based `config` in schemas (non-blocking, just warnings).
+5. **PayPal webhook event notifications are not consumed in this MVP** — payment status must be refreshed on demand via the PayPal API. Set `PAYPAL_WEBHOOK_ID` only if needed for downstream integrations.
 
 ---
 

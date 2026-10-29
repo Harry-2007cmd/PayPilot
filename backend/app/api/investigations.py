@@ -155,6 +155,7 @@ async def run_investigation(
         merchant_id=current_merchant.id,
         order_id=investigation.order_id,
         payment_attempt_id=investigation.payment_attempt_id,
+        proposed_by=current_user.id,
     )
 
     return AIInvestigateResponse(**ai_result)

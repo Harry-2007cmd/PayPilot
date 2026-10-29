@@ -52,10 +52,10 @@ async def get_event_timeline(
                         events.append({
                             "event_time": event.event_time.isoformat(),
                             "event_type": event.event_type,
-                            "source": "paypal_webhook_verified",
+                            "source": "provider_event",
                             "status": event.payload_minimized_json.get("status", "unknown"),
                             "details": event.payload_minimized_json,
-                            "provenance": "paypal_webhook_verified",
+                            "provenance": "provider_event",
                         })
         except ValueError:
             pass

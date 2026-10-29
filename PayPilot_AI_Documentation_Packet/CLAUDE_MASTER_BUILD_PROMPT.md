@@ -10,7 +10,7 @@ You are the lead full-stack engineer building PayPilot AI for the PayPal AI Hack
 
 ## Product requirements
 Build a functioning payment investigation application, not a static prototype:
-- PayPal Sandbox checkout, server-side order creation/capture, persistent records, verified webhooks.
+- PayPal Sandbox checkout, server-side order creation/capture, persistent records.
 - Deterministic discrepancy checks and investigation queue.
 - Payment detail timeline with provenance labels.
 - AI investigation agent using registered typed backend tools and actual application records.
@@ -26,7 +26,6 @@ Build a functioning payment investigation application, not a static prototype:
 - Use current official PayPal documentation and official docs for libraries/services.
 - Keep client secrets on the backend.
 - Use Decimal-safe currency arithmetic.
-- Verify webhook signatures and make webhook handling idempotent.
 - No arbitrary model-generated SQL, shell execution, or direct payment operations by the model.
 - Make UI loading, empty, success, and error states.
 - At each phase, run tests and summarize changed files, commands, results, and blockers.

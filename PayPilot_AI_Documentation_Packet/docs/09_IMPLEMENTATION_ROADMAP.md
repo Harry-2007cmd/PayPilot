@@ -15,8 +15,11 @@
 ## Phase 2 — PayPal Sandbox payment
 - Configure Sandbox buyer/business accounts.
 - Implement server-side order creation, client approval, capture, and persistence.
-- Implement webhook verification and idempotent event processing.
 - Tests: API integration where credentials are present; unit tests for error paths.
+
+Note: PayPilot AI does not receive automatic PayPal event notifications in this MVP. Merchants can refresh payment status or initiate an investigation when they need an updated provider check.
+
+The end-to-end payment flow is: Sandbox checkout → backend capture → persisted payment → on-demand PayPal API verification → deterministic issue detection → AI investigation → evidence-backed recommendation → human-approved action → audit history.
 
 ## Phase 3 — Deterministic investigation engine
 - Define issue enums and rule checks.
@@ -45,7 +48,7 @@
 
 ## Phase 7 — Imports, polish, deployment
 - Add CSV template, preview, validation, import history, and source labels.
-- Deploy with HTTPS and reachable webhook URL.
+- Deploy with HTTPS.
 - Run end-to-end demo and regression tests.
 - Publish setup guide, license, and demo script.
 

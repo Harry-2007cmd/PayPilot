@@ -18,9 +18,8 @@ All endpoints must enforce authentication and merchant scope.
 - `GET /api/payments/{payment_id}`
 - `GET /api/payments/{payment_id}/timeline`
 
-### Webhooks
-- `POST /api/webhooks/paypal`
-- `GET /api/webhooks/status` (admin/diagnostic access only; no secret exposure)
+### Payment verification
+- `POST /api/payments/{payment_id}/refresh` — refresh a payment status directly through the PayPal API
 
 ### Investigations
 - `GET /api/investigations`
@@ -50,7 +49,8 @@ Use Pydantic schemas, consistent error formats, pagination, rate limits for AI e
 5. `find_related_records(query filters with strict bounds)`
 6. `run_payment_rules(order_id/payment_attempt_id)`
 7. `get_investigation_summary(investigation_id)`
-8. `prepare_resolution(investigation_id, action_type, parameters)` — creates a pending proposal only; never executes a payment operation.
+8. `refresh_payment_status(payment_attempt_id)` — retrieves the current PayPal capture status on demand
+9. `prepare_resolution(investigation_id, action_type, parameters)` — creates a pending proposal only; never executes a payment operation.
 
 Tools must validate arguments and access scope. Do not expose arbitrary SQL or raw ORM query generation to the model.
 

@@ -22,7 +22,7 @@
 
 ## Risks and mitigations
 - **API access/time:** Keep marketplace connectors out of core path; use labelled CSV import.
-- **Webhook testing:** Test local and deployed webhook verification; document setup.
+- **On-demand verification:** Payment status is refreshed via the PayPal API when a merchant requests it; no automatic event notifications are consumed in this MVP.
 - **AI hallucination:** Require evidence references, typed tools, deterministic checks, and uncertainty fields.
 - **Duplicate financial action:** Use action state machine, idempotency, and revalidation.
 - **Ambiguous provider timeout:** Mark outcome unknown and reconcile before retry.

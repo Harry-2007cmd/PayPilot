@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { paymentsApi, investigationsApi, webhooksApi } from '../services/api';
+import { paymentsApi, investigationsApi } from '../services/api';
 import { Card, CardHeader, CardTitle, CardContent } from './ui/Card';
 import { StatusBadge } from '../components/StatusBadge';
 import {
@@ -29,7 +29,6 @@ export function Overview() {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [recentPayments, setRecentPayments] = useState<any[]>([]);
   const [recentInvestigations, setRecentInvestigations] = useState<any[]>([]);
-  const [webhookStatus, setWebhookStatus] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -38,10 +37,9 @@ export function Overview() {
 
   const fetchDashboardData = async () => {
     try {
-      const [paymentsRes, investigationsRes, webhookRes] = await Promise.all([
+      const [paymentsRes, investigationsRes] = await Promise.all([
         paymentsApi.list({ page_size: 5 }),
         investigationsApi.list({ page_size: 5, status: 'open' }),
-        webhooksApi.status(),
       ]);
 
       const payments = paymentsRes.data.items;
@@ -70,7 +68,6 @@ export function Overview() {
 
       setRecentPayments(payments);
       setRecentInvestigations(investigations);
-      setWebhookStatus(webhookRes.data);
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
     } finally {
@@ -269,43 +266,6 @@ export function Overview() {
         </Card>
       </div>
 
-      {/* Webhook Health */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-lg">Webhook Health</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {webhookStatus ? (
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                <p className="text-2xl font-bold text-green-600 dark:text-green-400">{webhookStatus.verified}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Verified</p>
-              </div>
-              <div className="text-center p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
-                <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{webhookStatus.pending}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Pending</p>
-              </div>
-              <div className="text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
-                <p className="text-2xl font-bold text-red-600 dark:text-red-400">{webhookStatus.failed}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Failed</p>
-              </div>
-              <div className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <p className="text-2xl font-bold text-gray-600 dark:text-gray-400">{webhookStatus.duplicate}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Duplicates</p>
-              </div>
-              <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{webhookStatus.total_events}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Total Events</p>
-              </div>
-            </div>
-          ) : (
-            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-              <RefreshCw className="w-12 h-12 mx-auto mb-2 opacity-50" />
-              <p>Webhook status unavailable</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+      </div>
   );
 }

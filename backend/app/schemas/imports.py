@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 from decimal import Decimal
 from datetime import datetime
@@ -46,8 +46,7 @@ class ImportRecordOut(BaseModel):
     uploaded_at: datetime
     completed_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ImportRecordListResponse(BaseModel):
@@ -70,5 +69,4 @@ class ImportedRecordOut(BaseModel):
     provenance: str
     source_row_number: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

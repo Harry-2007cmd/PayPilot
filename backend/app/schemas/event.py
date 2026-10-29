@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 from datetime import datetime
 import uuid
@@ -16,8 +16,7 @@ class ProviderEventOut(BaseModel):
     processing_status: str
     payload_minimized_json: dict
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ProviderEventListResponse(BaseModel):
@@ -25,11 +24,3 @@ class ProviderEventListResponse(BaseModel):
     total: int
     page: int
     page_size: int
-
-
-class WebhookStatusResponse(BaseModel):
-    total_events: int
-    verified: int
-    pending: int
-    failed: int
-    duplicate: int

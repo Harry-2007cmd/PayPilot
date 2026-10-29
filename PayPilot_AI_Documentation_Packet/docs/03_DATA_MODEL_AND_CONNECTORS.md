@@ -20,7 +20,7 @@
 
 ### provider_events
 - id, merchant_id, provider, provider_event_id, event_type, event_time, received_at, verification_status, processing_status, payload_minimized_json
-- Unique provider event ID per provider/account scope. Store only the fields required for operation/audit.
+- Legacy event records retained for audit and timeline continuity. New events are not received automatically in this MVP; the table is preserved for historical data and any future on-demand verification records.
 
 ### investigations
 - id, merchant_id, created_by, issue_type, status, title, order_id, payment_attempt_id, priority, opened_at, resolved_at
@@ -50,8 +50,8 @@ Create a provider-neutral interface such as:
 - `get_order(...)`
 - `get_capture(...)`
 - `refund_capture(...)`
-- `verify_webhook(...)`
-- `normalize_event(...)`
+- `verify_payment_status(...)`
+- `normalize_provider_response(...)`
 
 Implement PayPal first. Marketplace/store adapters should be added independently. CSV is an ingestion adapter, not a live API integration.
 

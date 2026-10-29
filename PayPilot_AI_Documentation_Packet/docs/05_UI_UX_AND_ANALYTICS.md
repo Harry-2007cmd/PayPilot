@@ -10,7 +10,7 @@ Professional, trustworthy operations dashboard. Prefer a clear hierarchy, neutra
 4. **AI investigation:** question input, investigation progress, evidence cards, deterministic comparison results, uncertainties, and recommendations.
 5. **Approval center:** proposed action details, approve/reject controls, authorization context, and execution result.
 6. **Audit history:** searchable history of investigations and consequential actions.
-7. **Integrations/imports:** PayPal Sandbox connection/test status, webhook health, CSV upload/preview/import status.
+7. **Integrations/imports:** PayPal Sandbox connection/test status, on-demand payment verification, CSV upload/preview/import status.
 
 ## AG Grid AG Studio
 Use AG Grid AG Studio only after checking current sponsor documentation, access, package/API, licensing, and eligibility requirements. Use it substantively where available for:
@@ -28,7 +28,7 @@ Do not falsely label ordinary charts as AG Studio or claim sponsor features that
 - Amount mismatch count.
 - Unmatched imported records.
 - Refund count and amount by currency.
-- Webhook processing failures and duplicate event deliveries.
+- Payment status refresh outcomes and provider verification failures.
 
 Metrics must have documented definitions and time windows. Do not label payment volume as revenue or captured amounts as payouts. Do not aggregate unlike currencies.
 
@@ -37,5 +37,5 @@ Metrics must have documented definitions and time windows. Do not label payment 
 - Search by local order ID, PayPal order ID, or capture ID.
 - Status badges must have text labels, not colour alone.
 - Approval buttons show the exact action, amount, currency, and target.
-- Show source labels: PayPal API, verified PayPal webhook, CSV import, or test fixture.
+- Show source labels: PayPal API, PayPal API (refreshed), CSV import, or test fixture.
 - Never show a destructive or financial action as completed before backend confirmation.

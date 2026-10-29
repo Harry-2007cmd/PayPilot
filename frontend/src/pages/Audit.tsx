@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { actionsApi } from '../services/api';
 import { Card, CardContent } from './ui/Card';
-import { History, Filter, Clock, User, Database, Shield, CheckCircle2, XCircle, CreditCard, Upload } from 'lucide-react';
+import { History, Filter, User, Database, Shield, CheckCircle2, XCircle, CreditCard, Upload } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { clsx } from 'clsx';
 
@@ -51,7 +51,6 @@ export function Audit() {
     login: <User className="w-4 h-4 text-gray-600" />,
     order_created: <Database className="w-4 h-4 text-primary-600" />,
     payment_created: <CreditCard className="w-4 h-4 text-green-600" />,
-    webhook_received: <Clock className="w-4 h-4 text-amber-600" />,
     import_completed: <Upload className="w-4 h-4 text-purple-600" />,
   };
 

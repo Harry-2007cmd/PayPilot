@@ -10,7 +10,7 @@
 - FR-02: Create a local order and PayPal Sandbox order from the backend.
 - FR-03: Complete buyer approval and capture using the PayPal flow.
 - FR-04: Persist local order and payment attempt with provider IDs and provenance.
-- FR-05: Receive, verify, store, and idempotently process supported webhooks.
+- FR-05: Refresh payment status on demand through the PayPal API, verify the provider response, and update local records only through valid state transitions.
 - FR-06: List/search/filter orders, payments, and investigations.
 - FR-07: Show a payment timeline and source/trust labels.
 - FR-08: Run deterministic rules for selected mismatch cases.
@@ -25,7 +25,7 @@
 
 ## Non-functional requirements
 - Security: secrets stay server-side; all records are merchant-scoped.
-- Reliability: idempotent webhook processing; safe handling of duplicate requests and provider timeouts.
+- Reliability: safe handling of duplicate requests and provider timeouts; payment status is verified on demand rather than assumed current.
 - Auditability: sensitive actions have actor, time, target, decision, and outcome.
 - Explainability: AI claims map to stored evidence references.
 - Usability: an issue should be understandable without reading raw logs.
@@ -39,7 +39,7 @@ A reviewer can:
 2. Start the application following the README.
 3. Sign in using documented demo instructions.
 4. complete a Sandbox checkout and see a persisted order/payment.
-5. See webhook processing status without duplicate event side effects.
+5. Refresh a payment status directly through the PayPal API and see the verified provider response reflected in local records.
 6. open an issue and inspect its timeline.
 7. ask the AI to investigate it and receive evidence-grounded output.
 8. review/approve a supported test refund and see the result/audit record.

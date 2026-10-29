@@ -31,7 +31,7 @@ export function StatusBadge({ status, provenance, className }: StatusBadgeProps)
 
   const provenanceColors: Record<string, string> = {
     paypal_api: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-    paypal_webhook_verified: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+    paypal_api_refresh: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
     merchant_csv_import: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
     test_fixture: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
     local: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',

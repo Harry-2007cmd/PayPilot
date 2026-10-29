@@ -7,7 +7,6 @@ from datetime import datetime, timezone
 
 from app.models.order import Order
 from app.models.payment import PaymentAttempt
-from app.models.event import ProviderEvent
 
 
 class RulesEngine:
@@ -48,7 +47,6 @@ class RulesEngine:
             if payment:
                 findings.extend(await self._check_amount_currency(order, payment))
                 findings.extend(await self._check_status_consistency(order, payment))
-                findings.extend(await self._check_duplicate_events(payment))
 
         return {"order_id": str(order_id), "payment_count": len(payments), "findings": findings}
 
@@ -93,33 +91,6 @@ class RulesEngine:
                 "details": {"order_status": order.status, "payment_status": payment.status},
             })
         return findings
-
-    async def _check_duplicate_events(self, payment: PaymentAttempt) -> list[dict]:
-        """Check for duplicate webhook events for the same capture."""
-        if not payment.capture_id:
-            return []
-
-        result = await self.db.execute(
-            select(ProviderEvent).where(
-                ProviderEvent.merchant_id == payment.merchant_id,
-                ProviderEvent.payload_minimized_json["resource_id"].astext == payment.capture_id,
-                ProviderEvent.event_type.ilike("%CAPTURE%"),
-            )
-        )
-        events = list(result.scalars().all())
-
-        if len(events) > 1:
-            return [{
-                "type": "duplicate_event",
-                "severity": "medium",
-                "summary": f"Duplicate capture events detected for capture {payment.capture_id}",
-                "details": {
-                    "capture_id": payment.capture_id,
-                    "event_count": len(events),
-                    "event_ids": [str(e.id) for e in events],
-                },
-            }]
-        return []
 
     async def check_failed_checkout(self, order_id: uuid.UUID) -> list[dict]:
         """Check for failed or cancelled checkout."""

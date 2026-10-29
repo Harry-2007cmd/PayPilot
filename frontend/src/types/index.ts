@@ -195,11 +195,11 @@ export const PROVENANCE_LABELS: Record<string, ProvenanceLabel> = {
     color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
     description: 'Retrieved directly from PayPal API',
   },
-  paypal_webhook_verified: {
-    value: 'paypal_webhook_verified',
-    label: 'PayPal Webhook (Verified)',
+  paypal_api_refresh: {
+    value: 'paypal_api_refresh',
+    label: 'PayPal API (Refreshed)',
     color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-    description: 'Received and signature-verified from PayPal',
+    description: 'Verified via direct PayPal API check',
   },
   merchant_csv_import: {
     value: 'merchant_csv_import',

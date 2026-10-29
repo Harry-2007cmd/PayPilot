@@ -129,11 +129,7 @@ export const paymentsApi = {
     api.get('/payments', { params }),
   get: (id: string) => api.get(`/payments/${id}`),
   timeline: (id: string) => api.get(`/payments/${id}/timeline`),
-};
-
-// Webhooks API
-export const webhooksApi = {
-  status: () => api.get('/webhooks/status'),
+  refresh: (id: string) => api.post(`/payments/${id}/refresh`),
 };
 
 // Investigations API
@@ -190,6 +186,11 @@ export const importsApi = {
     });
   },
   confirm: (importId: string) => api.post('/imports/confirm', { import_id: importId, confirm: true }),
+};
+
+// Config API
+export const configApi = {
+  status: () => api.get('/config-status'),
 };
 
 export default api;
