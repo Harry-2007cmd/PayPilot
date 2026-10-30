@@ -19,9 +19,9 @@ export function Settings() {
       try {
         const response = await configApi.status();
         setConfigStatus({
-          paypalConfigured: response.data.paypalConfigured,
-          aiConfigured: response.data.aiConfigured,
-          databaseConnected: response.data.databaseConnected,
+          paypalConfigured: response.data.paypal_configured,
+          aiConfigured: response.data.ai_configured,
+          databaseConnected: response.data.database_connected,
         });
       } catch (error) {
         console.error('Failed to fetch config status:', error);

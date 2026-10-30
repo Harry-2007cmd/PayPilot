@@ -161,112 +161,118 @@ export function Checkout() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* PayPal Script Provider - loads the JS SDK */}
-      <PayPalScriptProvider
-        options={{
-          // Sandbox client ID - in production, use production client ID
-          clientId: paypalClientId || 'AYCzKH8QrmavaJ2Utdjf4EZFFfSvzBvVv5FyDcNMvmkdc_Zd-SzL8bDor7FHbSb8fD19awlAO1a34u89',
-          components: ['buttons'],
-          // Load PayPal SDK from sandbox environment
-          sdkBaseUrl: 'https://www.sandbox.paypal.com/sdk/js',
-        }}
-      >
-        {/* SDK status monitor - tracks script loading state */}
-        <SdkStatusMonitor />
+      {paypalClientId ? (
+        <PayPalScriptProvider
+          options={{
+            // Sandbox client ID - fetched from backend config
+            clientId: paypalClientId,
+            components: ['buttons'],
+            // Load PayPal SDK from sandbox environment
+            sdkBaseUrl: 'https://www.sandbox.paypal.com/sdk/js',
+          }}
+        >
+          {/* SDK status monitor - tracks script loading state */}
+          <SdkStatusMonitor />
 
-        {/* Checkout content */}
-        <div className="p-8 max-w-md mx-auto">
-          {status === 'loading' ? (
-            <div className="animate-pulse space-y-3">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                PayPal Payment
-              </h1>
-              <p className="text-gray-500 dark:text-gray-400">
-                Setting up payment for order {internalOrderId || ''}...
-              </p>
-            </div>
-          ) : status === 'captured' ? (
-            <div className="space-y-6">
+          {/* Checkout content */}
+          <div className="p-8 max-w-md mx-auto">
+            {status === 'loading' ? (
+              <div className="animate-pulse space-y-3">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  PayPal Payment
+                </h1>
+                <p className="text-gray-500 dark:text-gray-400">
+                  Setting up payment for order {internalOrderId || ''}...
+                </p>
+              </div>
+            ) : status === 'captured' ? (
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>
+                      <CheckCircle2 className="w-6 h-6 text-primary-600" />
+                      Payment Captured
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <p className="text-gray-500 dark:text-gray-400">
+                      Your payment has been successfully captured via PayPal.
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                      Order ID: {internalOrderId || 'N/A'}
+                    </p>
+                    <button
+                      onClick={() => navigate('/')}
+                      className="mt-4 inline-block px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700"
+                    >
+                      Return Home
+                    </button>
+                  </CardContent>
+                </Card>
+              </div>
+            ) : sdkStatus === 'error' ? (
               <Card>
                 <CardHeader>
-                  <CardTitle>
-                    <CheckCircle2 className="w-6 h-6 text-primary-600" />
-                    Payment Captured
+                  <CardTitle className="flex items-center gap-2 text-red-600">
+                    <AlertCircle className="w-5 h-5" />
+                    PayPal SDK Error
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-6">
-                  <p className="text-gray-500 dark:text-gray-400">
-                    Your payment has been successfully captured via PayPal.
-                  </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                    Order ID: {internalOrderId || 'N/A'}
+                  <p className="text-gray-500 dark:text-gray-400 mb-4">
+                    The PayPal JavaScript SDK failed to load. Please check your network connection and try again.
                   </p>
                   <button
-                    onClick={() => navigate('/')}
-                    className="mt-4 inline-block px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700"
+                    onClick={() => window.location.reload()}
+                    className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
                   >
-                    Return Home
+                    Retry
                   </button>
                 </CardContent>
               </Card>
-            </div>
-          ) : sdkStatus === 'error' ? (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-red-600">
-                  <AlertCircle className="w-5 h-5" />
-                  PayPal SDK Error
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-6">
-                <p className="text-gray-500 dark:text-gray-400 mb-4">
-                  The PayPal JavaScript SDK failed to load. Please check your network connection and try again.
-                </p>
-                <button
-                  onClick={() => window.location.reload()}
-                  className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
-                >
-                  Retry
-                </button>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  <DollarSign className="w-6 h-6 text-primary-600" />
-                  PayPal Checkout
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-6">
-                <p className="text-gray-500 dark:text-gray-400 mb-4">
-                  PayPal payment setup for order {internalOrderId || ''}
-                </p>
-                {/* PayPal Buttons component - renders the PayPal payment UI */}
-                <PayPalButtons
-                  // createOrder: Called when buyer clicks the PayPal button
-                  // Returns the PayPal order ID created by our backend
-                  createOrder={createOrder}
-                  onApprove={handleApprove}
-                  onError={(err: any) => {
-                    console.error('PayPal error:', err);
-                    setError(err.message || 'PayPal checkout error');
-                    setStatus('failed');
-                  }}
-                  // Disable only during active operations
-                  disabled={isProcessing}
-                >
-                  {/* Button text and styling */}
-                  <div className="flex items-center justify-center">
-                    <span className="text-gray-500 dark:text-gray-400">
-                      Pay {internalOrderId ? `for Order ${internalOrderId}` : ''}
-                    </span>
-                  </div>
-                </PayPalButtons>
-              </CardContent>
-            </Card>
-          )}
+            ) : (
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    <DollarSign className="w-6 h-6 text-primary-600" />
+                    PayPal Checkout
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-6">
+                  <p className="text-gray-500 dark:text-gray-400 mb-4">
+                    PayPal payment setup for order {internalOrderId || ''}
+                  </p>
+                  {/* PayPal Buttons component - renders the PayPal payment UI */}
+                  <PayPalButtons
+                    // createOrder: Called when buyer clicks the PayPal button
+                    // Returns the PayPal order ID created by our backend
+                    createOrder={createOrder}
+                    onApprove={handleApprove}
+                    onError={(err: any) => {
+                      console.error('PayPal error:', err);
+                      setError(err.message || 'PayPal checkout error');
+                      setStatus('failed');
+                    }}
+                    // Disable only during active operations
+                    disabled={isProcessing}
+                  >
+                    {/* Button text and styling */}
+                    <div className="flex items-center justify-center">
+                      <span className="text-gray-500 dark:text-gray-400">
+                        Pay {internalOrderId ? `for Order ${internalOrderId}` : ''}
+                      </span>
+                    </div>
+                  </PayPalButtons>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </PayPalScriptProvider>
+      ) : (
+        <div className="p-8 max-w-md mx-auto text-center text-gray-500 dark:text-gray-400">
+          <p>Loading PayPal configuration...</p>
         </div>
-      </PayPalScriptProvider>
+      )}
     </div>
   );
 }
