@@ -14,6 +14,7 @@ import { Audit } from './pages/Audit';
 import { Imports } from './pages/Imports';
 import { Payments } from './pages/Payments';
 import { PaymentDetail } from './pages/PaymentDetail';
+import { Checkout } from './pages/Checkout';
 import { Settings } from './pages/Settings';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -46,6 +47,8 @@ function App() {
         <Route index element={<Overview />} />
         <Route path="payments" element={<Payments />} />
         <Route path="payments/:id" element={<PaymentDetail />} />
+        <Route path="checkout" element={<Checkout />} />
+        <Route path="checkout/:orderId" element={<Checkout />} />
         <Route path="investigations" element={<Investigations />} />
         <Route path="investigations/new" element={<InvestigationCreate />} />
         <Route path="investigations/:id" element={<InvestigationDetail />} />

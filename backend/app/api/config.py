@@ -36,6 +36,7 @@ async def config_status(
     return {
         "paypal_configured": _is_real(settings.PAYPAL_CLIENT_ID) and _is_real(settings.PAYPAL_CLIENT_SECRET),
         "paypal_base_url": settings.PAYPAL_BASE_URL,
+        "paypal_client_id": settings.PAYPAL_CLIENT_ID if _is_real(settings.PAYPAL_CLIENT_ID) else None,
         "ai_configured": _is_real(settings.GEMINI_API_KEY),
         "ai_model": settings.GEMINI_MODEL,
         "database_connected": db_ok,

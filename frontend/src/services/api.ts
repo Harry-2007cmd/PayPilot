@@ -130,6 +130,8 @@ export const paymentsApi = {
   get: (id: string) => api.get(`/payments/${id}`),
   timeline: (id: string) => api.get(`/payments/${id}/timeline`),
   refresh: (id: string) => api.post(`/payments/${id}/refresh`),
+  createPayPalOrder: (orderId: string) => api.post(`/paypal/orders/${orderId}/create`),
+  capturePayPalOrder: (orderId: string) => api.post(`/paypal/orders/${orderId}/capture`),
 };
 
 // Investigations API

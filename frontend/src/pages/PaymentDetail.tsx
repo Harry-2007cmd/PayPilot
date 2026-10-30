@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ordersApi, paymentsApi } from '../services/api';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
 import { StatusBadge } from '../components/StatusBadge';
-import { ArrowLeft, CreditCard, DollarSign, Clock, AlertTriangle, Copy, RefreshCw } from 'lucide-react';
+import { ArrowLeft, CreditCard, DollarSign, Clock, AlertTriangle, Copy, RefreshCw, CreditCard as CreditCardIcon } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { clsx } from 'clsx';
 import { PROVENANCE_LABELS } from '../types';
@@ -328,6 +328,15 @@ export function PaymentDetail() {
                   className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   Create Investigation
+                </button>
+              )}
+              {order && order.status !== 'paid' && (
+                <button
+                  onClick={() => navigate(`/checkout/${order.id}`)}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <CreditCardIcon className="w-4 h-4" />
+                  Pay with PayPal
                 </button>
               )}
               {payment.capture_id && payment.status === 'captured' && (

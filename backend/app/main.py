@@ -46,6 +46,7 @@ app.include_router(payments.router)
 app.include_router(investigations.router)
 app.include_router(actions.router)
 app.include_router(imports.router)
+app.include_router(config.router)
 
 
 if __name__ == "__main__":
